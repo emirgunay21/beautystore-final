@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+ 
+  <link rel="stylesheet" href="still.css">      
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+  <div class="nav-logo">
+    <a href="Home.html">
+    <img src="images/Logo.png" style="width:65px;height:22px;" alt="logo">
+    </a>
+  </div>
+<div class="nav-search">
+    <input type="text" placeholder="Search">
+  </div>
+<div class="nav-links">
+  <a href="Home.html" class="active">Home</a>
+  <a href="ProductPage.html">Catalog</a>
+  <a href="About.html">About</a>
+  <a href="Contactus.html">Contact</a>
+</div>
+<div class="nav-icons">
+  <img src="images/Favorites.png" style="width:24px;height:24px;" alt="Favorites">
+
+  <div class="nav-cart" id="navCart" style="margin-left:16px; cursor:pointer;">
+    <img src="images/Cart.png" style="width:24px;height:24px;" alt="Cart">
+    <span id="cartCount" class="cart-badge">0</span>
+  </div>
+
+  
+  <div class="nav-user" id="navUser" style="margin-left:16px;cursor:pointer;">
+  <img src="images/User.png" style="width:24px;height:24px;" alt="User">
+</div>
+</div>
+  <button class="nav-burger" id="burgerBtn" type="button"
+  aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"
+  style="margin-right:24px;">
+  <img src="images/Burger.png" style="width:40px;height:40px;" alt="menu">
+</button>
+</div>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-header">
+    <p style="margin:0;font-weight:600;">Menu</p>
+    <button class="mobile-menu-close" id="menuCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+
+  <div class="mobile-menu-search">
+    <input type="text" placeholder="Search">
+  </div>
+
+  <nav class="mobile-menu-links">
+    <a href="Home.html">Home</a>
+    <a href="ProductPage.html" class="active">Product Page</a>
+    <a href="ProductDetailsMobile.html">Product Page Mobile</a>
+    <a href="Products Page Filters Mobile.html">Product Page Mobile Filters</a>
+    <a href="ShoppingCardMobile.html">Shopping Card</a>
+    <a href="step1.html">Adress İnformation</a>
+    <a href="Step2.html">Shipping Metod</a>
+    <a href="step3.html">Payment</a>
+  </nav>
+
+  <div class="mobile-menu-icons">
+    <button type="button" class="icon-btn" aria-label="Favorites">
+      <img src="images/Favorites.png" style="width:24px;height:24px;" alt="">
+    </button>
+
+    <button type="button" class="icon-btn" id="mobileCartBtn" aria-label="Cart">
+
+      <img src="images/Cart.png" style="width:24px;height:24px;" alt="">
+      <span id="cartCountMobile" class="cart-badge">0</span>
+    </button>
+
+    <button type="button" class="icon-btn" id="mobileUserBtn" aria-label="User">
+      <img src="images/User.png" style="width:24px;height:24px;" alt="">
+    </button>
+  </div>
+</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+    <div class="step1">
+  
+   <div class="step1adress">
+     <img src="images/Location.png" style="width:24px;height:24px;" alt="step1adress"> 
+     <div class="step1adress-text"> <p style="font-size: 14px;margin: 0px;">Step 1</p> 
+      <p1 style="font-size: 18px;">Adress</p> 
+      </div>
+       </div>
+   <a href="Step2.html" class="step1adress">
+  <img src="images/Shipping.png" style="width:24px;height:24px;" alt="">
+  <div class="step1adress-text">
+    <p style="font-size:14px;margin:0;color:gray;">Step 2</p>
+    <p style="font-size:18px;color:gray;">Shipping</p>
+  </div>
+</a>
+  <a href="Step3.html" class="step1adress stepOnlyDesktop">
+  <img src="images/Payment.png" style="width:24px;height:24px;" alt="">
+  <div class="step1adress-text">
+    <p style="font-size:14px;margin:0;color:gray;">Step 3</p>
+    <p style="font-size:18px;color:gray;">Payment</p>
+  </div>
+</a>
+</div>
+<div class="step1SelectAdress">
+  <div class="step1SelectAdressBlock">
+    <h2 style="margin-top:0px;font-size:20px;">Select Address</h2>
+
+    <div id="addressList"></div>
+
+    <div class="step1ContentButtons">
+      <button class="step1ContentButtonsBack" id="step1Back" type="button">Back</button>
+      <button class="step1ContentButtonsNext" id="step1Next" type="button">Next</button>
+
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+    <div class="footerContent">
+    <div class="footerTop">
+       <img src="images/Logo (1).png" style="width:65px;height:22px;" alt="logo">
+                <p style ="color:#CFCFCF;margin-left:33px;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">We are a residential interior design firm located in Portland. Our boutique-studio offers more than</p>
+                </div>
+      <div class="footerBottom">
+                <div class="footerServices">
+      <h1 style ="color:#CFCFCF;font-size:16px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Services</h1>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Bonus program</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Gift cards</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Credit and payment</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Service contracts</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Non-cash account</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Payment</p>
+</div>
+                <div class="footerAssistance">
+                <h2 style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Assistance to the buyer</h2>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Find an order</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Terms of delivery</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Exchange and return of goods</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Guarantee</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Frequently asked questions</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Terms of use of the site</p>
+      
+      </div>
+           </div>   
+              </div>
+      <div class="footericons">
+                    <img src="images/Twitter.png" style="width: 24px;"/>
+                    <img src="images/Facebook.png" style="width: 24px;"/>
+                    <img src="images/tiktok.png" style="width: 24px;"/>
+                    <img src="images/Instagram.png" style="width: 24px;"/>
+                </div>
+    </div>
+</div>
+<div class="modal" id="loginModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="1"></div>
+
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="modal-head">
+      <h3 id="loginTitle" style="margin:0;">Sign in</h3>
+      <button class="modal-x" type="button" data-close="1" aria-label="Close">×</button>
+    </div>
+
+    <div class="modal-body">
+      <label class="modal-label">Email</label>
+      <input id="loginEmail" class="modal-input" type="email" placeholder="you@example.com">
+
+      <label class="modal-label">Password</label>
+      <input id="loginPass" class="modal-input" type="password" placeholder="••••••••">
+
+      <button id="loginBtn" class="modal-btn" type="button">Login</button>
+      <p id="loginMsg" style="margin:12px 0 0 0;font-size:12px;opacity:.8;"></p>
+    </div>
+  </div>
+</div>
+  <script src="data.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+ 
+  <link rel="stylesheet" href="still.css">      
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+  <div class="nav-logo">
+    <a href="Home.html">
+    <img src="images/Logo.png" style="width:65px;height:22px;" alt="logo">
+    </a>
+  </div>
+<div class="nav-search">
+    <input type="text" placeholder="Search">
+  </div>
+<div class="nav-links">
+  <a href="Home.html" class="active">Home</a>
+  <a href="ProductPage.html">Catalog</a>
+  <a href="About.html">About</a>
+  <a href="Contactus.html">Contact</a>
+</div>
+<div class="nav-icons">
+  <img src="images/Favorites.png" style="width:24px;height:24px;" alt="Favorites">
+
+  <div class="nav-cart" id="navCart" style="margin-left:16px; cursor:pointer;">
+    <img src="images/Cart.png" style="width:24px;height:24px;" alt="Cart">
+    <span id="cartCount" class="cart-badge">0</span>
+  </div>
+
+  
+  <div class="nav-user" id="navUser" style="margin-left:16px;cursor:pointer;">
+  <img src="images/User.png" style="width:24px;height:24px;" alt="User">
+</div>
+</div>
+  <button class="nav-burger" id="burgerBtn" type="button"
+  aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"
+  style="margin-right:24px;">
+  <img src="images/Burger.png" style="width:40px;height:40px;" alt="menu">
+</button>
+</div>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-header">
+    <p style="margin:0;font-weight:600;">Menu</p>
+    <button class="mobile-menu-close" id="menuCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+
+  <div class="mobile-menu-search">
+    <input type="text" placeholder="Search">
+  </div>
+
+  <nav class="mobile-menu-links">
+    <a href="Home.html">Home</a>
+    <a href="ProductPage.html" class="active">Product Page</a>
+    <a href="ProductDetailsMobile.html">Product Page Mobile</a>
+    <a href="Products Page Filters Mobile.html">Product Page Mobile Filters</a>
+    <a href="ShoppingCardMobile.html">Shopping Card</a>
+    <a href="step1.html">Adress İnformation</a>
+    <a href="Step2.html">Shipping Metod</a>
+    <a href="step3.html">Payment</a>
+  </nav>
+
+  <div class="mobile-menu-icons">
+    <button type="button" class="icon-btn" aria-label="Favorites">
+      <img src="images/Favorites.png" style="width:24px;height:24px;" alt="">
+    </button>
+
+    <button type="button" class="icon-btn" id="mobileCartBtn" aria-label="Cart">
+
+      <img src="images/Cart.png" style="width:24px;height:24px;" alt="">
+      <span id="cartCountMobile" class="cart-badge">0</span>
+    </button>
+
+    <button type="button" class="icon-btn" id="mobileUserBtn" aria-label="User">
+      <img src="images/User.png" style="width:24px;height:24px;" alt="">
+    </button>
+  </div>
+</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="Breadcrumbs">
+            <p style="color: #A4A4A4;">Home</p>
+            <img src="images/Arrowright.png" alt="">
+            <p style="color: #A4A4A4;">Catalog</p>
+            <img src="images/Arrowright.png" alt="">
+            <p>Beauty</p>
+        </div>
+<div class="filters-rating">
+  <div class="filters" id="filtersBtn">
+    <h3>Filters</h3>  
+    <img src="images/Filters.png" style="width:24px;height:24px;" alt="filter">
+  </div>
+
+  <div class="rating" id="ratingBtn">
+    <p>By rating</p>  
+    <img id="ratingChevron" src="images/Chevron Down.png" style="width:24px;height:24px;" alt="chevron">
+  </div>
+</div>
+
+
+<div class="filtersDrop" id="filtersDrop">
+  <div class="filtersDropRow">
+  <p style="margin:0;font-weight:600;">Brand</p>
+  <div class="filtersDropOptions" id="brandFilters"></div>
+</div>
+
+  <div class="filtersDropRow">
+  <p style="margin:0;font-weight:600;">Rating</p>
+  <div class="filtersDropOptions">
+    <label><input type="radio" name="rate"> 5 Stars</label>
+    <label><input type="radio" name="rate"> 4+ Stars</label>
+    <label><input type="radio" name="rate"> 3+ Stars</label>
+  </div>
+</div>
+</div>
+    
+<div class="ProductResultDesktop">
+  <div class="productPageFiltersMobile">
+<div class="productPageFilters">    
+<div class="productPageFiltersTop">
+  <div class="productPageFiltersTopPrice">
+    <h2>Price</h2>
+    <img src="images/arrowup.png" style="width:24px;height:24px;" alt="filter icon">
+</div>
+<div class="productPageFiltersTopPriceFilter">
+  <img src="images/Price Filter.png"  style="width:341px;height:100px;"alt="price icon">
+    
+  </div>
+</div>
+<div class="productPageFiltersBrands" > 
+  <div class="productPageFiltersBrandsTop">
+    <h1 style="font-size: 18px;">Brand</h1>
+    <img src="images/arrowup.png" style="width:24px;height: 24px;" alt="price icon">
+  </div>
+<div class="productPageFiltersBrandsBottom">
+<div class="brandSearch">
+    <input type="text" id="brandSearchDesktop" placeholder="Search">
+  </div>
+<ul class="brandList" id="brandListDesktop"></ul>
+    <!-- 
+<li>
+      <label class="brandItem">
+        <input type="checkbox" checked>
+        <span class="brandCheck"></span>
+        <span class="brandName">Apple</span>
+        <span class="brandCount">110</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Samsung</span>
+        <span class="brandCount">125</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Xiaomi</span>
+        <span class="brandCount">68</span>
+      </label>
+    </li>
+
+    <li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Poco</span>
+        <span class="brandCount">44</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">OPPO</span>
+        <span class="brandCount">36</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Samsung</span>
+        <span class="brandCount">125</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Honor</span>
+        <span class="brandCount">10</span>
+      </label>
+    </li>
+
+    <li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Motorola</span>
+        <span class="brandCount">34</span>
+      </label>
+    </li>
+    <li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Nokia</span>
+        <span class="brandCount">22</span>
+      </label>
+    </li>
+
+    <li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">Real Me</span>
+        <span class="brandCount">35</span>
+      </label>
+    </li> 
+-->
+
+</div>
+
+</div>
+<div class="productPageFiltersBuiltMemory">
+  <div class="productPageFiltersBuiltMemoryTop">
+    <h1 style="font-size: 18px;">Built-in Memory</h1>
+    <img src="images/arrowup.png" style="width:24px;height: 24px;" alt="price icon">
+  </div>
+
+<div class="productPageFiltersBuiltMemoryBottom">
+ <div class="brandSearch">
+    <input type="text" placeholder="Search">
+  </div>
+<ul class="brandList">
+    <li>
+      <label class="brandItem">
+        <input type="checkbox" checked>
+        <span class="brandCheck"></span>
+        <span class="brandName">16G</span>
+        <span class="brandCount">65</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">32G</span>
+        <span class="brandCount">123</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">64GB</span>
+        <span class="brandCount">48</span>
+      </label>
+    </li>
+
+    <li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">128GB</span>
+        <span class="brandCount">50</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">256GB</span>
+        <span class="brandCount">24</span>
+      </label>
+    </li>
+<li>
+      <label class="brandItem">
+        <input type="checkbox">
+        <span class="brandCheck"></span>
+        <span class="brandName">512GB</span>
+        <span class="brandCount">8</span>
+      </label>
+    </li>
+    </ul>
+    </div>
+</div>
+<div class="productPageFiltersBottom">
+  <div class="productPageFiltersBottomText">
+    <h1 style="font-size: 18px;">Protection class</h1>
+    <img src="images/arrowdown.png" style="width:24px;height: 24px;" alt="price icon">
+  </div>
+  <div class="productPageFiltersBottomText">
+    <h1 style="font-size: 18px;">Screen diagonal</h1>
+    <img src="images/arrowdown.png" style="width:24px;height: 24px;" alt="price icon">
+  </div>
+  <div class="productPageFiltersBottomText">
+    <h1 style="font-size: 18px;">Screen type</h1>
+    <img src="images/arrowdown.png" style="width:24px;height: 24px;" alt="price icon">
+  </div>
+  <div class="productPageFiltersBottomText">
+    <h1 style="font-size: 18px;">Battery capacity</h1>
+    <img src="images/arrowdown.png" style="width:24px;height: 24px;" alt="price icon">
+  </div>
+</div>
+</div>
+</div>
+
+    <div class="ProductResult">
+      <!-- 
+        <div class="ProductResultItems">
+            <div class="productResultItemIphone">
+        <img src="images/applegold.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 14 Pro 512GB Gold MQ2</h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$1437</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            </div>
+         <div class="productResultItemIphone">
+        <img src="images/applewhite.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 11 128GB White </h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$510</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            
+        
+  </div>
+  </div>
+  
+  <div class="ProductResultItems">
+            <div class="productResultItemIphone">
+        <img src="images/applewhite.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 11 128GB White</h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$550</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            </div>
+         <div class="productResultItemIphone">
+        <img src="images/iphoneblue.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 14 Pro 1TB Gold (MQ2V3)</h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$1499</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            
+        
+  </div>
+  </div>
+      <div class="ProductResultItems">
+            <div class="productResultItemIphone">
+        <img src="images/applegold.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 14 Pro 1TB Gold (MQ2V3)</h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$1399</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            </div>
+         <div class="productResultItemIphone">
+        <img src="images/iphone14pro.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 14 Pro 128GB Deep Purple</h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$1600</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            
+        
+  </div>
+  </div>     
+<div class="ProductResultItems">
+            <div class="productResultItemIphone">
+        <img src="images/iphonepink.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 13 mini 128GB Pink (MLK23)</h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$850</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            </div>
+         <div class="productResultItemIphone">
+        <img src="images/iphoneblack.png"  style="width: 104px;height: 104px;" alt="product1">
+      <h2 style="font-size: 18px;color:black;overflow-wrap: break-word;margin-left: 12px;">Apple iPhone 14 Pro 256GB Space Black</h2>
+      <p style="font-size: 24px;color:black;margin: 0px;">$1399</p>
+      <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+            
+        
+  </div>
+  </div>  
+  <div class="ProductResultItems desktop-extra">
+  <div class="productResultItemIphone">
+    <img src="images/iphoneblue.png" style="width:104px;height:104px;" alt="product1">
+    <h2 style="font-size:18px;color:black;overflow-wrap:break-word;margin-left:12px;">Apple iPhone 14 Pro 256GB Silver (MQ103)</h2>
+    <p style="font-size:24px;color:black;margin:0;">$1500</p>
+    <button style="width:139px;height:48px;background-color:#211C24;border:none;color:white;margin-top:16px;border-radius:8px;">Buy Now</button>
+  </div>
+</div>
+ 
+        
+</div> 
+--> 
+<div id="productPageGrid"></div>
+</div> 
+</div>
+<div class="footer">
+    <div class="footerContent">
+    <div class="footerTop">
+       <img src="images/Logo (1).png" style="width:65px;height:22px;" alt="logo">
+                <p style ="color:#CFCFCF;margin-left:33px;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">We are a residential interior design firm located in Portland. Our boutique-studio offers more than</p>
+                </div>
+      <div class="footerBottom">
+                <div class="footerServices">
+      <h1 style ="color:#CFCFCF;font-size:16px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Services</h1>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Bonus program</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Gift cards</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Credit and payment</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Service contracts</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Non-cash account</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Payment</p>
+</div>
+                <div class="footerAssistance">
+                <h2 style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Assistance to the buyer</h2>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Find an order</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Terms of delivery</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Exchange and return of goods</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Guarantee</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Frequently asked questions</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Terms of use of the site</p>
+      
+      </div>
+           </div>   
+              </div>
+      <div class="footericons">
+                    <img src="images/Twitter.png" style="width: 24px;"/>
+                    <img src="images/Facebook.png" style="width: 24px;"/>
+                    <img src="images/tiktok.png" style="width: 24px;"/>
+                    <img src="images/Instagram.png" style="width: 24px;"/>
+                </div>
+    </div>
+ 
+ <div class="modal" id="loginModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="1"></div>
+
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="modal-head">
+      <h3 id="loginTitle" style="margin:0;">Sign in</h3>
+      <button class="modal-x" type="button" data-close="1" aria-label="Close">×</button>
+    </div>
+
+    <div class="modal-body">
+      <label class="modal-label">Email</label>
+      <input id="loginEmail" class="modal-input" type="email" placeholder="you@example.com">
+
+      <label class="modal-label">Password</label>
+      <input id="loginPass" class="modal-input" type="password" placeholder="••••••••">
+
+      <button id="loginBtn" class="modal-btn" type="button">Login</button>
+      <p id="loginMsg" style="margin:12px 0 0 0;font-size:12px;opacity:.8;"></p>
+    </div>
+  </div>
+</div>
+</div>
+<script src="data.js"></script>
+<script src="app.js">
+</script>
+</body>
+</html>

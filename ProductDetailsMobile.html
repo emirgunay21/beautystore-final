@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+ 
+  <link rel="stylesheet" href="still.css">      
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+  <div class="nav-logo">
+    <a href="Home.html">
+    <img src="images/Logo.png" style="width:65px;height:22px;" alt="logo">
+    </a>
+  </div>
+<div class="nav-search">
+    <input type="text" placeholder="Search">
+  </div>
+<div class="nav-links">
+  <a href="Home.html" class="active">Home</a>
+  <a href="ProductPage.html">Catalog</a>
+  <a href="About.html">About</a>
+  <a href="Contactus.html">Contact</a>
+</div>
+<div class="nav-icons">
+  <img src="images/Favorites.png" style="width:24px;height:24px;" alt="Favorites">
+
+  <div class="nav-cart" id="navCart" style="margin-left:16px; cursor:pointer;">
+    <img src="images/Cart.png" style="width:24px;height:24px;" alt="Cart">
+    <span id="cartCount" class="cart-badge">0</span>
+  </div>
+
+  
+  <div class="nav-user" id="navUser" style="margin-left:16px;cursor:pointer;">
+  <img src="images/User.png" style="width:24px;height:24px;" alt="User">
+</div>
+</div>
+  <button class="nav-burger" id="burgerBtn" type="button"
+  aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"
+  style="margin-right:24px;">
+  <img src="images/Burger.png" style="width:40px;height:40px;" alt="menu">
+</button>
+</div>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-header">
+    <p style="margin:0;font-weight:600;">Menu</p>
+    <button class="mobile-menu-close" id="menuCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+
+  <div class="mobile-menu-search">
+    <input type="text" placeholder="Search">
+  </div>
+
+  <nav class="mobile-menu-links">
+    <a href="Home.html">Home</a>
+    <a href="ProductPage.html" class="active">Product Page</a>
+    <a href="ProductDetailsMobile.html">Product Page Mobile</a>
+    <a href="Products Page Filters Mobile.html">Product Page Mobile Filters</a>
+    <a href="ShoppingCardMobile.html">Shopping Card</a>
+    <a href="step1.html">Adress İnformation</a>
+    <a href="Step2.html">Shipping Metod</a>
+    <a href="step3.html">Payment</a>
+  </nav>
+
+  <div class="mobile-menu-icons">
+    <button type="button" class="icon-btn" aria-label="Favorites">
+      <img src="images/Favorites.png" style="width:24px;height:24px;" alt="">
+    </button>
+
+    <button type="button" class="icon-btn" id="mobileCartBtn" aria-label="Cart">
+
+      <img src="images/Cart.png" style="width:24px;height:24px;" alt="">
+      <span id="cartCountMobile" class="cart-badge">0</span>
+    </button>
+
+    <button type="button" class="icon-btn" id="mobileUserBtn" aria-label="User">
+      <img src="images/User.png" style="width:24px;height:24px;" alt="">
+    </button>
+  </div>
+</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="Breadcrumbs" id="breadcrumbs">
+  <!-- 
+  <p id="bcHome" style="color:#A4A4A4;cursor:pointer;">Home</p>
+  <img src="images/Arrowright.png" alt="">
+  <p id="bcCatalog" style="color:#A4A4A4;cursor:pointer;">Catalog</p>
+  <img src="images/Arrowright.png" alt="">
+  <p id="bcCategory" style="color:#A4A4A4;">-</p>
+  <img src="images/Arrowright.png" alt="">
+  <p id="bcBrand" style="color:#A4A4A4;">-</p>
+  <img src="images/Arrowright.png" alt="">
+  <p id="bcTitle">-</p>
+-->
+</div>
+        <!--
+    <div class="productPageDetailsMobileMedia">
+        <div class="productPageFiltersMobileTop">
+<img id="pdMainImg" src="images/iphone13.png" style="width: 263.59px;height: 329.24px;" alt="product">
+        <div class="filtersMobile">
+            
+        </div>
+        <div class="imageFilters" id="pdThumbs">
+        
+            <img src="images/iphone14pro.png" style="width: 74px;height: 66px;" alt="menu">
+            <img src="images/image 61.png" style="width: 74px;height:66px;" alt="menu">
+            <img src="images/image 62.png" style="width: 74px;height:66px;" alt="menu">
+            <img src="images/image 63.png" style="width: 74px;height:66px;" alt="menu">
+      
+          </div>
+        </div>
+<div class="productPageDetailsMobileContent">
+
+
+        <div class="productPageDetailsMobileText">
+   <h1 id="pdTitle" style="font-size: 40px;font-weight: bold;font-family:Arial, Helvetica, sans-serif;margin: 0px;">
+  Apple iPhone 14 Pro Max
+</h1>
+    <div class="productPageDetailsMobileText2">
+<p id="pdPrice" style="font-size: 32px;">$1399</p>
+<p id="pdOldPrice" style="font-size: 24px;color: gray;text-decoration: line-through;margin-left: 16px;">$1499</p>
+
+    </div>
+</div>
+      
+
+<div class="productPageDetailsMobileinfo">
+  <div class="productPageDetailsMobileinfoColor">
+    <p style="font-size: 15px;">Select Color:</p>
+      <img src="images/Ellipse 12.png" style="width: 32px;height: 32px;" alt="Black">
+      <img src="images/Ellipse 13.png" style="width: 32px;height: 32px;" alt="Purple">
+      <img src="images/Ellipse 15.png" style="width: 32px;height: 32px;" alt="Red">
+      <img src="images/Ellipse 16.png" style="width: 32px;height: 32px;" alt="Yellow">
+      <img src="images/Ellipse 14.png" style="width: 32px;height: 32px;" alt="Gray">
+    
+    
+</div>
+<div class="productPageDetailsMobileinfoMemory">
+      <button style="width: 79.25px;height: 48px;border: 1px solid black;background-color: white;font-size: 14px;border-radius: 8px;font-size: 14px">128 GB</button>
+      <button style="width: 79.25px;height: 48px;border: 1px solid black;background-color: white;font-size: 14px;margin-left: 8px;border-radius: 8px;font-size: 14px">256 GB</button>
+      <button style="width: 79.25px;height: 48px;border: 1px solid black;background-color: white;font-size: 14px;margin-left: 8px;border-radius: 8px;font-size: 14px">512 GB</button>
+      <button style="width: 79.25px;height: 48px;border: 1px solid black;background-color: white;font-size: 14px;margin-left: 8px;border-radius: 8px;font-size: 14px">1 TB</button>
+</div>
+<div class="productPageDetailsMobileDetails">
+  <div class="productPageDetailsMobileDetails1">
+    <img src="images/ScreenSize.png" style="width:24px;height:24px;margin-top: 10px;" alt="Camera">
+    <div class="productPageDetailsMobileDetails1Text">
+    <p style="font-size: 14px;color: gray;margin: 0px;">Screen Size</p>
+    <p style="font-size: 14px;margin: 0px;">6.7"</p>
+
+
+</div>
+    </div>
+    <div class="productPageDetailsMobileDetails1">
+    <img src="images/smartphone-rotate-2-svgrepo-com 2.png" style="width:24px;height:24px;margin-top: 10px;" alt="Camera">
+    <div class="productPageDetailsMobileDetails1Text">
+    <p style="font-size: 14px;color: gray;margin: 0px;">CPU</p>
+    <p style="font-size: 14px;margin: 0px;">Apple A16 Bionic</p>
+
+
+</div>
+    </div>
+    <div class="productPageDetailsMobileDetails1">
+    <img src="images/smartphone-rotate-3-svgrepo-com 2.png" style="width:24px;height:24px;margin-top: 10px;" alt="Camera">
+    <div class="productPageDetailsMobileDetails1Text">
+    <p style="font-size: 14px;color: gray;margin: 0px;">Number of Cores</p>
+    <p style="font-size: 14px;margin: 0px;">6</p>
+
+
+</div>
+    </div>
+    <div class="productPageDetailsMobileDetails1">
+    <img src="images/smartphone-rotate-4-svgrepo-com 2.png" style="width:24px;height:24px;margin-top: 10px;" alt="Camera">
+    <div class="productPageDetailsMobileDetails1Text">
+    <p style="font-size: 14px;color: gray;margin: 0px;">Main camera </p>
+    <p style="font-size: 14px;margin: 0px;">48-12 -12 MP"</p>
+
+
+</div>
+    </div>
+    <div class="productPageDetailsMobileDetails1">
+    <img src="images/smartphone-rotate-5-svgrepo-com 2.png" style="width:24px;height:24px;margin-top: 10px;" alt="Camera">
+    <div class="productPageDetailsMobileDetails1Text">
+    <p style="font-size: 14px;color: gray;margin: 0px;">Front-camera</p>
+    <p style="font-size: 14px;margin: 0px;">12 MP</p>
+
+
+</div>
+    </div>
+    <div class="productPageDetailsMobileDetails1">
+    <img src="images/smartphone-rotate-6-svgrepo-com 2.png" style="width:24px;height:24px;margin-top: 10px;" alt="Camera">
+    <div class="productPageDetailsMobileDetails1Text">
+    <p style="font-size: 14px;color: gray;margin: 0px;">Battery capacity</p>
+    <p style="font-size: 14px;margin: 0px;">4323 mAh</p>
+
+
+</div>
+    </div>
+    <p id="pdDesc" style="font-size: 15px;color: #6C6C6C; margin-top: 24px;">Enhanced capabilities thanks toan enlarged display of 6.7 inchesand work without rechargingthroughout the day. Incredible photosas in weak, yesand in bright lightusing the new systemwith two cameras more...</p>
+    </div>
+    
+    </div>
+    <div class="productPageDetailsMobileButtons">
+    <button style="width: 341px;height: 56px;background-color:white;border-radius: 8px;border: 1px solid black;color: black;font-size: 16px;margin-top: 26px;">Add to Wishlist</button>
+    <button style="width: 341px;height: 56px;background-color: black;border-radius: 8px;border: 1px solid black;color: white;font-size: 16px;margin-top: 16px;">Add to Cart</button>
+ </div>
+  
+    <div class="productPageDetailsMobileDetailIcon">
+<div class="productPageDetailsMobileDetailIcon1">
+    <img src="images/Delivery.png" style="width:56px;height:56px;" alt="Shield">
+    <p style="font-size: 14px;color: gray;margin: 0px;">Free Delivery</p>
+    <h1 style="font-size: 14px;color: black;margin: 0px;">1-2 day </h1>
+ </div>
+ <div class="productPageDetailsMobileDetailIcon1">
+    <img src="images/Stock.png" style="width:56px;height:56px;" alt="Shield">
+    <p style="font-size: 14px;color: gray;margin: 0px;">In Stock</p>
+    <h1 style="font-size: 14px;color: black;margin: 0px;">Today </h1>
+ </div>
+ <div class="productPageDetailsMobileDetailIcon1">
+    <img src="images/Guaranteed.png" style="width:56px;height:56px;" alt="Shield">
+    <p style="font-size: 14px;color: gray;margin: 0px;">Guaranteed</p>
+    <h1 style="font-size: 14px;color: black;margin: 0px;">1 year </h1>
+ </div>
+  </div>
+  </div>
+  </div>
+  -->
+          <div id="productDetailsRoot"></div>
+<!--  -->
+  <div class="productPageDetailsMobileDetailContentMedia">
+  <h1 style="font-size: 24px;font-weight: bold;margin-top: 128px;">Details</h1>
+    <div class="productPageDetailsMobileDetailContentText">
+      <p id="pdDetailsText" style="font-size: 14px;color: #6C6C6C;"></p>
+  </div>
+    
+    <div class="productPageDetailsMobileDetailContentScreen">
+      <h1 style="font-size: 20px;font-weight: bold;">Product Info</h1>
+      <div class="productPageDetailsMobileDetailContentScreenText">
+        <div class="productPageDetailsMobileDetailContentScreenText1">
+      <p style="font-size: 15px;color: black;font-weight: bold;">Brand</p>
+      <p id="pdSpec1" style="font-size: 15px;color: black;font-weight: bold;"></p>
+    </div>
+       <div class="productPageDetailsMobileDetailContentScreenText1">
+      <p style="font-size: 15px;color: black;font-weight: bold;">Category</p>
+      <p id="pdSpec2" style="font-size: 15px;color: black;font-weight: bold;"></p>
+    </div>
+    <div class="productPageDetailsMobileDetailContentScreenText1">
+      <p style="font-size: 15px;color: black;font-weight: bold;">Rating</p>
+      <p id="pdSpec3" style="font-size: 15px;color: black;font-weight: bold;"></p>
+    </div>
+     <div class="productPageDetailsMobileDetailContentScreenText1">
+      <p style="font-size: 15px;color: black;font-weight: bold;">Stock</p>
+      <p id="pdSpec4" style="font-size: 15px;color: black;font-weight: bold;"></p>
+    </div>
+    <div class="productPageDetailsMobileDetailContentScreenText1">
+      <p style="font-size: 15px;color: black;font-weight: bold;">Tags</p>
+      <div id="pdExtraList" class="productPageDetailsMobileDetailContentScreenText1Extra"></div>
+    </div>
+    
+   <!-- 
+    <div class="productPageDetailsMobileDetailContentScreenText1">
+          <p style="font-size: 15px;color: black;font-weight: bold;">Additionally</p>
+          <div class="productPageDetailsMobileDetailContentScreenText1Extra">
+          <p style="font-size: 15px;color: black;font-weight: bold;margin: 0px;">Dynamic Island</p>
+        <p style="font-size: 15px;color: black;font-weight: bold;margin: 0px;">Always-On display</p>
+        <p style="font-size: 15px;color: black;font-weight: bold;margin: 0px;">HDR display</p>
+        <p style="font-size: 15px;color: black;font-weight: bold;margin: 0px;">True Tone</p>
+        <p style="font-size: 15px;color: black;font-weight: bold;margin: 0px;">Wide color (P3)</p>
+
+    </div>
+    
+  </div>
+-->
+  </div>
+  </div>
+  <div class="productPageDetailsMobileDetailContentBottom">
+    <h1 style="font-size: 24px;font-weight: bold;margin-top: 128px;">Shipping & Warranty</h1>
+
+    <div class="productPageDetailsMobileDetailContentBottomText">
+      <div class="productPageDetailsMobileDetailContentBottomText1">
+      <p style="font-size: 15px;color: black;font-weight: bold;">Warranty</p>
+<p id="pdCpu1" style="font-size: 15px;color: black;font-weight: bold;"></p>
+    </div>
+    <div class="productPageDetailsMobileDetailContentBottomText1">
+      <p style="font-size: 15px;color: black;font-weight: bold;">Shipping</p>
+<p id="pdCpu2" style="font-size: 15px;color: black;font-weight: bold;"></p>
+    </div>
+    </div>
+</div>
+
+     <button style="width: 208px;height: 48px;background-color: white;;border-radius: 8px;border: 1px solid black;color: black;font-size: 16px;margin-top: 16px;">Wiew More</button>
+</div>
+
+<div class="productPageFiltersMobileRewiewsMedia">
+<div class="productPageFiltersMobileRewiews">
+<h1 style="font-size: 24px;font-weight: bold;">Reviews</h1>
+ <div class="productPageFiltersMobileRewiewsRating">
+<div class="productPageFiltersMobileRewiewsRating1">
+    <h1 style="font-size: 56px;font-weight: bold;margin: 0px;">4.8</h1>
+    <p style="font-size: 15px;color: gray;margin: 0px;">of 125 reviews</p>
+    </div>
+    <div class="productPageFiltersMobileRewiewsRatingStars">
+
+<!-- 
+    <img src="images/Star 1.png" style="width:24px;height:24px;" alt="star">
+    <img src="images/Star 1.png" style="width:24px;height:24px;" alt="star">
+    <img src="images/Star 1.png" style="width:24px;height:24px;" alt="star">
+    <img src="images/Star 1.png" style="width:24px;height:24px;" alt="star">
+    <img src="images/Star 5.png" style="width:24px;height:24px;" alt="star">
+-->
+    </div>
+    
+
+ <div id="reviewsRoot"></div>
+
+</div>
+<div class="productPageFiltersMobileRewiewsSchedule">
+    <div class="productPageFiltersMobileRewiewsSchedule1">
+      <p style="font-size: 18px;color: black;">Excellent</p>
+      <img src="images/Slider.png" style="width: 168px;height: 5px;" alt="progressbar">
+      <p style="font-size: 16px;color: gray;">100</p>
+      </div>
+      <div class="productPageFiltersMobileRewiewsSchedule1">
+      <p style="font-size: 18px;color: black;">Good</p>
+      <img src="images/Slider1.png" style="width: 168px;height: 5px;" alt="progressbar">
+      <p style="font-size: 16px;color: gray;">11</p>
+      </div>
+      <div class="productPageFiltersMobileRewiewsSchedule1">
+      <p style="font-size: 18px;color: black;">Average</p>
+      <img src="images/Slider3.png" style="width: 168px;height: 5px;" alt="progressbar">
+      <p style="font-size: 16px;color: gray;">3</p>
+      </div>
+      <div class="productPageFiltersMobileRewiewsSchedule1">
+      <p style="font-size: 18px;color: black;">Below Average</p>
+      <img src="images/Slider4.png" style="width: 168px;height: 5px;" alt="progressbar">
+      <p style="font-size: 16px;color: gray;">8</p>
+      </div>
+      <div class="productPageFiltersMobileRewiewsSchedule1">
+      <p style="font-size: 18px;color: black;">Poor</p>
+      <img src="images/Slider5.png" style="width: 168px;height: 5px;" alt="progressbar">
+      <p style="font-size: 16px;color: gray;">1</p>
+      </div>
+      </div>
+      <div class="review-comment-box">
+  <textarea id="commentInput" placeholder="Leave Comment"></textarea>
+</div>
+
+<div class="reviewCommentActions" style="width:344px;margin-top:16px;display:flex;gap:12px;align-items:center;">
+  <select id="commentStars" style="height:44px;border:1px solid #D0D0D0;border-radius:8px;padding:0 12px;">
+    <option value="5">5 ⭐</option>
+    <option value="4">4 ⭐</option>
+    <option value="3">3 ⭐</option>
+    <option value="2">2 ⭐</option>
+    <option value="1">1 ⭐</option>
+  </select>
+
+  <button id="commentSubmit"
+    style="height:44px;padding:0 16px;border-radius:8px;border:1px solid #111;background:#111;color:#fff;">
+    Send
+  </button>
+</div>
+
+    
+  </div>
+  <div class="reviewAndComments" id="commentsRoot">
+    <!--
+<div class="reviewAndCommentsGrace">
+    <img src="images/gracepic.png" style="width:48px;height:48px;margin-left: 16px;margin-top: 24px;" alt="User">
+    <div class="reviewAndCommentsGraceText">
+    <p style="font-size: 17px;font-weight: bold;margin: 0px;margin-left: 16px;">Grace Carey</p>
+    <div class="reviewAndCommentsGraceTextStars">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Starempty.png" style="width:16px;height:16px;" alt="star">
+    </div>
+    <div class="reviewAndCommentsGraceComment">
+    <p style="font-size: 17px;color: #7E7E7E">I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier with my purchase!! I have a pre-paid data plan so I was worried that this phone wouldn’t connect with my data plan, since the new phones don’t have the physical Sim tray anymore, but couldn’t have been easier! I bought an Unlocked black iPhone 14 Pro Max in excellent condition and everything is PERFECT. It was super easy to set up and the phone works and looks great. It truly was in excellent condition. Highly recommend!!!🖤</p>
+
+</div>
+    </div>
+    
+    </div>
+    <div class="reviewAndCommentsRonald">
+     <img src="images/ronaldpic.png" style="width:48px;height:48px;margin-left: 16px;margin-top: 24px;" alt="User">
+    <div class="reviewAndCommentsGraceText">
+    <p style="font-size: 17px;font-weight: bold;margin: 0px;">Ronald Richards</p>
+    <div class="reviewAndCommentsGraceTextStars">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    </div>
+    <div class="reviewAndCommentsGraceComment">
+    <p style="font-size: 17px;color: #7E7E7E">This phone has 1T storage and is durable. Plus all the new iPhones have a C port! Apple is phasing out the current ones! (All about the Benjamin’s) So if you want a phone that’s going to last grab an iPhone 14 pro max and get several cords and plugs.</p>
+
+</div>
+    </div>
+    </div>
+    <div class="reviewAndCommentsDarcy">
+     <img src="images/darcypic.png" style="width:48px;height:48px;margin-left: 16px;margin-top: 24px;" alt="User">
+    <div class="reviewAndCommentsGraceText">
+    <p style="font-size: 17px;font-weight: bold;margin: 0px;">Darcy King</p>
+    <div class="reviewAndCommentsGraceTextStars">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Starempty.png" style="width:16px;height:16px;" alt="star">
+    </div>
+    <div class="reviewAndCommentsGraceComment">
+    <p style="font-size: 17px;color: #7E7E7E">I might be the only one to say this but the camera is a little funky. Hoping it will change with a software update: otherwise, love this phone! Came in great conditio</p>
+<div class="reviewAndCommentsDarcyImages">
+    <img src="images/Review=Image1.png" style="width:118px;height:88px;border-radius:6px;;margin-top: 8px;" alt="User">
+<img src="images/Review=Image2.png" style="width:118px;height:88px;border-radius:6px; ;margin-top: 8px;" alt="User">
+
+</div>
+    </div>
+    </div>
+  </div>
+  <div class="reviewAndCommentsJohn">
+     <img src="images/jhonpic.png" style="width:48px;height:48px;margin-left: 16px;margin-top: 24px;" alt="User">
+    <div class="reviewAndCommentsGraceText">
+    <p style="font-size: 17px;font-weight: bold;margin: 0px;">Ronald Richards</p>
+    <div class="reviewAndCommentsGraceTextStars">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Star 1.png" style="width:16px;height:16px;" alt="star">
+    <img src="images/Starempty.png" style="width:16px;height:16px;" alt="star">
+    </div>
+    <div class="reviewAndCommentsGraceComment">
+    <p style="font-size: 17px;color: #7E7E7E">In Washington, it is already difficult to surprise with the opening of a new institution, but it is still possible. Especially if it is a True Cost project. Here you pay an entrance fee and get meals at cost price.</p>
+
+</div>
+    </div>
+    </div>
+     -->    
+  </div>
+<button id="commentsToggleBtn"
+  style="width:344px;height:56px;border-radius:8px;border:1px solid #111;background:#fff;margin-top:16px;">
+  View more
+</button>
+  </div>
+<div class="relatedProducts">
+  <h1 style="font-size: 24px;font-weight: bold;">Related Products</h1>
+<!-- 
+<div class="productPageFiltersMobileBottom">
+<div class="productPageFiltersMobileBottomTop">
+  <div class="productPageFiltersMobileBottomTop1">
+    <img src="images/applegold.png" style="width: 104px;height: 104px;" alt="product">
+    <p style="font-size: 16px;font-weight: bold;margin-left: 12px;">Apple iPhone 14 Pro 512GB Gold MQ23</p>
+    <p style="font-size: 24px;color: black;">$900</p>
+<button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+
+</div>
+  <div class="productPageFiltersMobileBottomTop1">
+    <img src="images/airpods.png" style="width: 104px;height: 104px;" alt="product">
+    <p style="font-size: 16px;font-weight: bold;margin-left: 12px">AirPods Max Silver</p>
+    <p style="font-size: 24px;color: black;">$2535</p>
+    <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+
+
+</div>
+</div>
+<div class="productPageFiltersMobileBottomTop">
+  <div class="productPageFiltersMobileBottomTop1">
+    <img src="images/applewatch.png" style="width: 104px;height: 104px;" alt="product">
+    <p style="font-size: 16px;font-weight: bold;margin-left: 12px;">Apple Watch Series 9 GPS 41mm Starlig</p>
+    <p style="font-size: 24px;color: black;">$399</p>
+    <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+
+
+</div>
+  <div class="productPageFiltersMobileBottomTop1">
+    <img src="images/iphoneblue.png" style="width: 104px;height: 104px;" alt="product">
+    <p style="font-size: 16px;font-weight: bold;margin-left: 12px">Apple iPhone 14 Pro 1TB Gold (MQ2V3)</p>
+    <p style="font-size: 24px;color: black;">$549</p>
+    <button style="width: 139px; height: 48px;background-color: #211C24; border: none; color: white;margin-top: 16px;border-radius: 8px;">Buy Now</button>
+
+
+</div>
+</div>
+</div>
+-->
+<div class="productPageFiltersMobileBottom" id="relatedProductsGrid"></div>
+</div>
+ <div class="footer">
+    <div class="footerContent">
+    <div class="footerTop">
+       <img src="images/Logo (1).png" style="width:65px;height:22px;" alt="logo">
+                <p style ="color:#CFCFCF;margin-left:33px;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">We are a residential interior design firm located in Portland. Our boutique-studio offers more than</p>
+                </div>
+      <div class="footerBottom">
+                <div class="footerServices">
+      <h1 style ="color:#CFCFCF;font-size:16px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Services</h1>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Bonus program</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Gift cards</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Credit and payment</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Service contracts</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Non-cash account</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Payment</p>
+</div>
+                <div class="footerAssistance">
+                <h2 style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Assistance to the buyer</h2>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Find an order</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Terms of delivery</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Exchange and return of goods</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Guarantee</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Frequently asked questions</p>
+                <p style ="color:#CFCFCF;font-size:13px;font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Terms of use of the site</p>
+      
+      </div>
+           </div>   
+              </div>
+      <div class="footericons">
+                    <img src="images/Twitter.png" style="width: 24px;"/>
+                    <img src="images/Facebook.png" style="width: 24px;"/>
+                    <img src="images/tiktok.png" style="width: 24px;"/>
+                    <img src="images/Instagram.png" style="width: 24px;"/>
+                </div>
+    </div>
+</div>
+<div class="modal" id="loginModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="1"></div>
+
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="modal-head">
+      <h3 id="loginTitle" style="margin:0;">Sign in</h3>
+      <button class="modal-x" type="button" data-close="1" aria-label="Close">×</button>
+    </div>
+
+    <div class="modal-body">
+      <label class="modal-label">Email</label>
+      <input id="loginEmail" class="modal-input" type="email" placeholder="you@example.com">
+
+      <label class="modal-label">Password</label>
+      <input id="loginPass" class="modal-input" type="password" placeholder="••••••••">
+
+      <button id="loginBtn" class="modal-btn" type="button">Login</button>
+      <p id="loginMsg" style="margin:12px 0 0 0;font-size:12px;opacity:.8;"></p>
+    </div>
+  </div>
+</div>
+  <script src="data.js" defer></script>
+<script src="app.js" defer></script>
+    </body>
+</html>
