@@ -1,6 +1,32 @@
 "use strict";
 const API_BASE = "http://localhost:3001";
 
+function getToken() {
+  return localStorage.getItem("token") || "";
+}
+
+async function apiFetch(path, options = {}) {
+  const token = getToken();
+
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers,
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.message || `${res.status} ${res.statusText}`);
+  }
+
+  return data;
+}
 /* =========================
    1) Core Helpers
 ========================= */
@@ -58,18 +84,28 @@ function writeCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function updateCartBadge() {
+async function updateCartBadge() {
   const badgeDesktop = document.getElementById("cartCount");
   const badgeMobile = document.getElementById("cartCountMobile");
 
-  const cart = readCart();
-  const totalQty = cart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+  // element yoksa iş yapma
+  if (!badgeDesktop && !badgeMobile) return;
+
+  let totalQty = 0;
+
+  try {
+    // login değilse /cart 401 döner -> catch'e düşer -> 0 gösterir
+    const data = await apiFetch("/cart");
+    const cart = data.cart || [];
+    totalQty = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+  } catch (e) {
+    totalQty = 0;
+  }
 
   if (badgeDesktop) {
     badgeDesktop.textContent = totalQty;
     badgeDesktop.style.display = totalQty > 0 ? "inline-block" : "none";
   }
-
   if (badgeMobile) {
     badgeMobile.textContent = totalQty;
     badgeMobile.style.display = totalQty > 0 ? "inline-block" : "none";
@@ -236,15 +272,17 @@ function setupLoginModal() {
   }
 
   navUser.addEventListener("click", () => {
-    const user = getUser();
-    if (!user) openModal();
-    else {
-      if (confirm("Çıkış yapmak ister misin?")) {
-        localStorage.removeItem("user");
-        renderUser();
-      }
+  const user = getUser();
+  if (!user) openModal();
+  else {
+    if (confirm("Çıkış yapmak ister misin?")) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");   // ✅ bunu ekle
+      renderUser();
+      updateCartBadge();                  // ✅ bunu ekle (await değil)
     }
-  });
+  }
+});
 
   if (mobileUserBtn) {
     mobileUserBtn.addEventListener("click", (e) => {
@@ -274,20 +312,43 @@ function setupLoginModal() {
     if (e.key === "Escape") closeModal();
   });
 
-  btn?.addEventListener("click", () => {
-    const email = (emailEl?.value || "").trim();
-    const pass = (passEl?.value || "").trim();
+btn?.addEventListener("click", async () => {
+  const email = (emailEl?.value || "").trim();
+  const password = (passEl?.value || "").trim();
 
-    if (!email || !pass) {
-      if (msg) msg.textContent = "Email ve şifre boş olamaz.";
+  if (!email || !password) {
+    if (msg) msg.textContent = "Email ve şifre boş olamaz.";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (msg) msg.textContent = data.message || "Login başarısız";
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify({ email }));
+    // ✅ TOKEN'i kaydet
+    localStorage.setItem("token", data.token);
+
+    // ✅ user'ı artık backend'den dönen bilgilerle kaydet
+    localStorage.setItem("user", JSON.stringify(data.user));
+
     if (msg) msg.textContent = "Giriş başarılı ✅";
     renderUser();
     setTimeout(closeModal, 250);
-  });
+  } catch (err) {
+    console.error("LOGIN FETCH ERROR:", err);
+    if (msg) msg.textContent = "Sunucuya bağlanılamadı";
+  }
+});
 
   renderUser();
 }
@@ -299,7 +360,7 @@ function setupLoginModal() {
 
 
 async function renderAll() {
-  updateCartBadge();
+  await updateCartBadge();
 
   const productsGrid = document.getElementById("productsGrid");
   const discountGrid = document.getElementById("discountGrid");
@@ -1136,34 +1197,36 @@ const p = data.product;
       if (firstSize) firstSize.click();
     }
 
-    const addBtn = document.getElementById("addToCartBtn");
-    addBtn?.addEventListener("click", () => {
-      if (Number(p.stock || 0) <= 0) {
-        alert("Stok yok.");
-        return;
-      }
+  // ... renderProductDetails içinde, root.innerHTML set edildikten sonra:
 
-      const cart = readCart();
-      const key = `${p.id}|${selectedShade || ""}|${selectedSize || ""}`;
-      const existing = cart.find((i) => i.key === key);
+const addBtn = document.getElementById("addToCartBtn");
 
-      if (existing) existing.qty = (existing.qty || 0) + 1;
-      else
-        cart.push({
-          key,
-          id: p.id,
-          qty: 1,
-          shade: selectedShade,
-          size: selectedSize,
-        });
+addBtn?.addEventListener("click", async () => {
+  if (Number(p.stock || 0) <= 0) {
+    alert("Stok yok.");
+    return;
+  }
 
-      writeCart(cart);
-      updateCartBadge();
+  try {
+    await apiFetch("/cart", {
+      method: "POST",
+      body: JSON.stringify({ productId: p.id, qty: 1 }),
     });
+
+    alert("Sepete eklendi ✅");
+
+    // ✅ C) badge async -> await
+    await updateCartBadge();
   } catch (err) {
     console.error(err);
-    root.innerHTML = "<p style='padding:16px;'>Ürün yüklenemedi.</p>";
+    alert("Sepete eklenemedi");
   }
+});
+
+} catch (err) {
+  console.error(err);
+  root.innerHTML = "<p style='padding:16px;'>Ürün yüklenemedi.</p>";
+}
 }
 
 /* =========================
@@ -1173,26 +1236,49 @@ async function renderCartPage() {
   const listEl = document.getElementById("cartList");
   if (!listEl) return;
 
-  const cart = readCart();
+  // 1) DB'den sepeti çek
+  let cart = [];
+  try {
+    const data = await apiFetch("/cart"); // { ok:true, cart:[{productId, quantity}] }
+    cart = (data.cart || []).map((i) => ({
+      id: Number(i.productId),
+      qty: Number(i.quantity),
+    }));
+  } catch (err) {
+    console.error("Cart fetch error:", err);
+    listEl.innerHTML = `<p style="padding:12px;color:#6C6C6C;">Sepet alınamadı</p>`;
+    listEl.classList.remove("is-scroll");
+    updateSummary(0);
+    await updateCartBadge();
+    return;
+  }
+
+  // 2) Boş sepet
   if (!cart.length) {
     listEl.innerHTML = `<p style="padding:12px;color:#6C6C6C;">Sepet boş</p>`;
     listEl.classList.remove("is-scroll");
     updateSummary(0);
+    await updateCartBadge();
     return;
   }
 
-  const ids = [...new Set(cart.map((i) => Number(i.id)).filter(Boolean))];
+  // 3) Ürün detaylarını çek
+  const ids = [...new Set(cart.map((i) => i.id).filter(Boolean))];
   const products = await Promise.all(
-  ids.map((id) => getJSON(`${API_BASE}/products/${id}`).then(r => r.product).catch(() => null))
-);
-
+    ids.map((id) =>
+      getJSON(`${API_BASE}/products/${id}`)
+        .then((r) => r.product)
+        .catch(() => null)
+    )
+  );
   const byId = new Map(products.filter(Boolean).map((p) => [Number(p.id), p]));
 
+  // 4) Render
   let subtotal = 0;
 
   listEl.innerHTML = cart
     .map((item) => {
-      const p = byId.get(Number(item.id));
+      const p = byId.get(item.id);
       const title = p?.title || "Product";
       const thumb = p?.thumbnail || "images/placeholder.png";
       const price = Number(p?.price || 0);
@@ -1201,71 +1287,79 @@ async function renderCartPage() {
       const lineTotal = price * qty;
       subtotal += lineTotal;
 
-      const variantText = [item.shade ? `Shade: ${item.shade}` : "", item.size ? `Size: ${item.size}` : ""].filter(Boolean).join(" • ");
-
-      const rowKey = item.key || String(item.id);
-
       return `
-      <div class="shopingCardProduct" data-row-key="${rowKey}">
-        <img src="${thumb}" alt="${title}" style="width: 90px;height:90px;object-fit:cover;">
-        <div class="shopingCardProductDetails">
-          <div class="shopingCardProductDetailsTitle">
-            <p style="font-size: 16px;font-weight: 500;margin: 0;">${title}</p>
-            ${variantText ? `<p style="font-size: 12px;color:#6C6C6C;margin:4px 0 0 0;">${variantText}</p>` : ""}
-          </div>
+        <div class="shopingCardProduct" data-product-id="${item.id}">
+          <img src="${thumb}" alt="${title}" style="width:90px;height:90px;object-fit:cover;">
+          <div class="shopingCardProductDetails">
+            <div class="shopingCardProductDetailsTitle">
+              <p style="font-size:16px;font-weight:500;margin:0;">${title}</p>
+            </div>
 
-          <div class="shopingCardProductDetailsQuantity">
-            <button class="quantityButton" type="button" data-dec="1">-</button>
-            <p class="quantityNumber">${qty}</p>
-            <button class="quantityButton" type="button" data-inc="1">+</button>
+            <div class="shopingCardProductDetailsQuantity">
+              <button class="quantityButton" type="button" data-dec="1">-</button>
+              <p class="quantityNumber">${qty}</p>
+              <button class="quantityButton" type="button" data-inc="1">+</button>
 
-            <p style="font-size: 20px;margin: 0;">$${lineTotal.toFixed(0)}</p>
-            <button class="cancel-btn" type="button" aria-label="Remove product" data-remove="1">&times;</button>
+              <p style="font-size:20px;margin:0;">$${lineTotal.toFixed(0)}</p>
+              <button class="cancel-btn" type="button" aria-label="Remove product" data-remove="1">&times;</button>
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
     })
     .join("");
 
   updateSummary(subtotal);
+  listEl.classList.toggle("is-scroll", listEl.children.length >= 3);
 
-  const itemsCount = listEl.children.length;
-  listEl.classList.toggle("is-scroll", itemsCount >= 3);
+  // 5) Events (1 kere bind)
+  if (!listEl.dataset.bound) {
+    listEl.dataset.bound = "1";
 
-  listEl.addEventListener(
-    "click",
-    (e) => {
+    listEl.addEventListener("click", async (e) => {
       const row = e.target.closest(".shopingCardProduct");
       if (!row) return;
 
-      const key = row.dataset.rowKey;
-      if (!key) return;
+      const productId = Number(row.dataset.productId);
+      if (!Number.isFinite(productId)) return;
 
-      let cartNow = readCart();
+      const qtyEl = row.querySelector(".quantityNumber");
+      const currentQty = Number(qtyEl?.textContent || 0);
 
-      const idx = cartNow.findIndex((x) => (x.key || String(x.id)) === key);
-      if (idx === -1) return;
+      try {
+        if (e.target.closest("[data-inc='1']")) {
+          await apiFetch("/cart", {
+            method: "POST",
+            body: JSON.stringify({ productId, qty: 1 }),
+          });
+        } else if (e.target.closest("[data-dec='1']")) {
+          const nextQty = currentQty - 1;
 
-      if (e.target.closest("[data-inc='1']")) {
-        cartNow[idx].qty = (Number(cartNow[idx].qty) || 0) + 1;
+          if (nextQty <= 0) {
+            await apiFetch(`/cart/${productId}`, { method: "DELETE" });
+          } else {
+            await apiFetch(`/cart/${productId}`, {
+              method: "PUT",
+              body: JSON.stringify({ qty: nextQty }),
+            });
+          }
+        } else if (e.target.closest("[data-remove='1']")) {
+          await apiFetch(`/cart/${productId}`, { method: "DELETE" });
+        } else {
+          return;
+        }
+
+        await renderCartPage();
+        await updateCartBadge();
+      } catch (err) {
+        console.error("Cart action error:", err);
+        alert("Sepet işlemi başarısız.");
       }
+    });
+  }
 
-      if (e.target.closest("[data-dec='1']")) {
-        cartNow[idx].qty = (Number(cartNow[idx].qty) || 0) - 1;
-        if (cartNow[idx].qty <= 0) cartNow.splice(idx, 1);
-      }
-
-      if (e.target.closest("[data-remove='1']")) {
-        cartNow.splice(idx, 1);
-      }
-
-      writeCart(cartNow);
-      updateCartBadge();
-      renderCartPage();
-    },
-    { once: true }
-  );
+  // ✅ Render bittiğinde badge senkronla
+  await updateCartBadge();
 }
 
 function updateSummary(subtotal) {
@@ -1581,61 +1675,80 @@ function setPaymentTotals(subtotal) {
 
 async function renderPaymentSummary() {
   const wrap = document.getElementById("paymentSummaryItems");
-  if (!wrap) return; 
+  if (!wrap) return;
 
-  const cart = readCart();
+  // ✅ Cart'ı API'den al
+  let cart = [];
+  try {
+    const data = await apiFetch("/cart"); // { ok:true, cart:[{productId, quantity}] }
+    cart = (data.cart || []).map((i) => ({
+      id: i.productId,
+      qty: i.quantity,
+    }));
+  } catch (e) {
+    // token yoksa / login değilse
+    wrap.innerHTML = `<p style="padding:12px;color:#6C6C6C;">Sepet boş</p>`;
+    setPaymentTotals(0);
+    return;
+  }
+
   if (!cart.length) {
     wrap.innerHTML = `<p style="padding:12px;color:#6C6C6C;">Sepet boş</p>`;
     setPaymentTotals(0);
     return;
   }
 
-  const ids = [...new Set(cart.map(i => Number(i.id)).filter(Boolean))];
+  // ürün detaylarını çek
+  const ids = [...new Set(cart.map((i) => Number(i.id)).filter(Boolean))];
   const products = await Promise.all(
-    ids.map(id => getJSON(`${API_BASE}/products/${id}`).then(r => r.product).catch(() => null))
-
+    ids.map((id) =>
+      getJSON(`${API_BASE}/products/${id}`)
+        .then((r) => r.product)
+        .catch(() => null)
+    )
   );
-  const byId = new Map(products.filter(Boolean).map(p => [Number(p.id), p]));
+  const byId = new Map(products.filter(Boolean).map((p) => [Number(p.id), p]));
 
   let subtotal = 0;
 
-  wrap.innerHTML = cart.map(item => {
-    const p = byId.get(Number(item.id));
-    if (!p) return "";
+  wrap.innerHTML = cart
+    .map((item) => {
+      const p = byId.get(Number(item.id));
+      if (!p) return "";
 
-    const qty = Number(item.qty) || 1;
-    const price = Number(p.price) || 0;
-    const line = price * qty;
-    subtotal += line;
+      const qty = Number(item.qty) || 1;
+      const price = Number(p.price) || 0;
+      const line = price * qty;
+      subtotal += line;
 
-    const thumb = p.thumbnail || "";
+      const thumb = p.thumbnail || "";
 
-
-    return `
-      <div class="Step3SummaryItem" style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #E7E7E7;border-radius:10px;margin-bottom:10px;">
-        <img src="${thumb}" alt="${p.title}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">
-        <div style="flex:1;">
-          <div style="font-size:12px;font-weight:600;">${p.title}</div>
-          <div style="font-size:12px;color:#6C6C6C;">x${qty}</div>
+      return `
+        <div class="Step3SummaryItem" style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #E7E7E7;border-radius:10px;margin-bottom:10px;">
+          <img src="${thumb}" alt="${p.title}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">
+          <div style="flex:1;">
+            <div style="font-size:12px;font-weight:600;">${p.title}</div>
+            <div style="font-size:12px;color:#6C6C6C;">x${qty}</div>
+          </div>
+          <div style="font-size:12px;font-weight:700;">${money(line)}</div>
         </div>
-        <div style="font-size:12px;font-weight:700;">${money(line)}</div>
-      </div>
-    `;
-  }).join("");
+      `;
+    })
+    .join("");
 
   setPaymentTotals(subtotal);
 
-  // (opsiyonel) Step1 seçilen adres / Step2 seçilen kargo yazıları
+  // Adres / shipping kısmı şimdilik localStorage kalabilir (hocanın isteği sonra)
   const addresses = JSON.parse(localStorage.getItem("addresses") || "[]");
-const selectedAddressId = localStorage.getItem("selectedAddressId");
-const chosen = addresses.find(a => String(a.id) === String(selectedAddressId));
+  const selectedAddressId = localStorage.getItem("selectedAddressId");
+  const chosen = addresses.find((a) => String(a.id) === String(selectedAddressId));
 
-const addrEl = document.getElementById("paymentAddressText");
-if (addrEl) addrEl.textContent = chosen ? chosen.line : "-";
+  const addrEl = document.getElementById("paymentAddressText");
+  if (addrEl) addrEl.textContent = chosen ? chosen.line : "-";
 
   const selectedShippingId = localStorage.getItem("selectedShippingId");
   const shipEl = document.getElementById("paymentShippingText");
-  if (shipEl && selectedShippingId) shipEl.textContent = selectedShippingId; 
+  if (shipEl) shipEl.textContent = selectedShippingId || "-";
 }
 function renderPaymentAddressAndShipping() {
   const addressEl = document.getElementById("paymentAddressText");
@@ -1667,11 +1780,11 @@ function has(id) {
   return !!document.getElementById(id);
 }
 
-function initGlobal() {
+async function initGlobal() {
   setupBurgerMenu();
   setupLoginModal();
   setupClicks();
-  updateCartBadge();
+  await updateCartBadge();
 }
 
 async function initHomePage() {
@@ -1709,7 +1822,7 @@ function initStep3Page() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  initGlobal();
+  await initGlobal();
 
   try {
     if (has("mainBanner") || has("productsGrid") || has("discountGrid")) {

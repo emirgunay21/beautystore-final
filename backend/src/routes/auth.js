@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const pool = require("../db");
+const authenticateToken = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -94,6 +95,24 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
+    return res.status(500).json({ ok: false, message: "Sunucu hatası" });
+  }
+});
+// PROFILE (JWT protected)  -> GET /auth/profile
+router.get("/profile", authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT id, name, email, role, created_at FROM users WHERE id = ? LIMIT 1",
+      [req.user.id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ ok: false, message: "Kullanıcı bulunamadı" });
+    }
+
+    return res.json({ ok: true, user: rows[0] });
+  } catch (err) {
+    console.error("PROFILE ERROR:", err);
     return res.status(500).json({ ok: false, message: "Sunucu hatası" });
   }
 });
