@@ -1,5 +1,8 @@
 "use strict";
 const API_BASE = "http://localhost:3001";
+"use strict";
+
+
 
 function getToken() {
   return localStorage.getItem("token") || "";
@@ -20,12 +23,44 @@ async function apiFetch(path, options = {}) {
   });
 
   const data = await res.json().catch(() => ({}));
-
-  if (!res.ok) {
-    throw new Error(data.message || `${res.status} ${res.statusText}`);
-  }
-
+  if (!res.ok) throw new Error(data.message || `${res.status} ${res.statusText}`);
   return data;
+}
+let __addresses = []; 
+
+async function loadAddressesFromAPI() {
+  const listEl = document.getElementById("addressList");
+  if (!listEl) return;
+
+  try {
+    const data = await apiFetch("/addresses");
+    const apiAddresses = data.addresses || [];
+
+    console.log("API addresses:", apiAddresses);
+
+    // API adreslerini localStorage formatına çevir
+    const formatted = apiAddresses.map((a) => ({
+      id: String(a.id),
+      title: a.title,
+      tag: a.tag,
+      line: a.line,
+      phone: a.phone,
+    }));
+
+    // localStorage'a yaz
+    writeAddresses(formatted);
+
+    // seçili adres yoksa ilkini seç
+    if (!localStorage.getItem("selectedAddressId") && formatted[0]) {
+      localStorage.setItem("selectedAddressId", formatted[0].id);
+    }
+
+    // mevcut render sistemi çalışsın
+    renderAddresses();
+
+  } catch (err) {
+    console.error("GET /addresses failed:", err.message);
+  }
 }
 /* =========================
    1) Core Helpers
@@ -1121,54 +1156,91 @@ const p = data.product;
     }
 
     if (commentsRoot) {
-      const stored = readComments(String(p.id));
-      const merged = [...stored, ...seedList];
-      renderComments(merged);
+      let dbComments = [];
+
+try {
+  const r = await getJSON(`${API_BASE}/comments/${p.id}`);
+  dbComments = r.comments || [];
+} catch (e) {
+  dbComments = [];
+}
+
+const merged = [
+  ...dbComments.map(c => ({
+    name: c.userEmail || "User",
+    stars: Number(c.stars) || 5,
+    text: c.text || "",
+    pics: [],
+    avatar: "images/User.png",
+  })),
+  ...seedList
+];
+
+renderComments(merged);
     }
 
     if (sendBtn && !sendBtn.dataset.bound) {
-      sendBtn.dataset.bound = "1";
+  sendBtn.dataset.bound = "1";
 
-      sendBtn.addEventListener("click", () => {
-        const text = (input?.value || "").trim();
-        const stars = Number(starsSel?.value || 5);
+  sendBtn.addEventListener("click", async () => {
+    const text = (input?.value || "").trim();
+    const stars = Number(starsSel?.value || 5);
 
-        if (!text) {
-          alert("Yorum boş olamaz.");
-          return;
-        }
+    if (!text) {
+      alert("Yorum boş olamaz.");
+      return;
+    }
 
-        const user = (() => {
-          try {
-            return JSON.parse(localStorage.getItem("user"));
-          } catch {
-            return null;
-          }
-        })();
+    const user = (() => {
+      try {
+        return JSON.parse(localStorage.getItem("user"));
+      } catch {
+        return null;
+      }
+    })();
 
-        if (!user?.email) {
-          alert("Yorum yapmak için giriş yapmalısın.");
-          document.getElementById("navUser")?.click();
-          return;
-        }
+    if (!user?.email) {
+      alert("Yorum yapmak için giriş yapmalısın.");
+      document.getElementById("navUser")?.click();
+      return;
+    }
 
-        const storedNow = readComments(String(p.id));
-        storedNow.unshift({
-          name: user.email,
+    try {
+      // ✅ 1) DB'ye kaydet
+      await apiFetch("/comments", {
+        method: "POST",
+        body: JSON.stringify({
+          productId: p.id,
           stars,
           text,
+        }),
+      });
+
+      // ✅ 2) DB'den tekrar çek
+      const r2 = await getJSON(`${API_BASE}/comments/${p.id}`);
+      const db2 = r2.comments || [];
+
+      // ✅ 3) UI formatına çevir + seed yorumları da ekle
+      const mergedNow = [
+        ...db2.map((c) => ({
+          name: c.userEmail || "User",
+          stars: Number(c.stars) || 5,
+          text: c.text || "",
           pics: [],
           avatar: "images/User.png",
-        });
+        })),
+        ...seedList,
+      ];
 
-        writeComments(String(p.id), storedNow);
+      renderComments(mergedNow);
 
-        if (input) input.value = "";
-
-        const mergedNow = [...storedNow, ...seedList];
-        renderComments(mergedNow);
-      });
+      if (input) input.value = "";
+    } catch (e) {
+      console.error(e);
+      alert("Yorum eklenemedi");
     }
+  });
+}
 
     setupCommentsToggle();
 
@@ -1390,12 +1462,18 @@ function setupCheckoutBtn() {
 /* =========================
    9) Checkout
 ========================= */
-function renderAddresses() {
+function renderAddresses(addresses) {
   const listEl = document.getElementById("addressList");
   if (!listEl) return;
 
-  const addresses = readAddresses();
-  const selectedId = localStorage.getItem(LS_SELECTED) || (addresses[0] && addresses[0].id);
+  // ✅ parametre yoksa localStorage'tan oku
+  if (!Array.isArray(addresses)) {
+    addresses = readAddresses();
+  }
+
+  const selectedId =
+    localStorage.getItem("selectedAddressId") ||
+    (addresses[0] && String(addresses[0].id));
 
   if (!addresses.length) {
     listEl.innerHTML = `<p style="margin:12px 0;color:#6C6C6C;">No saved address.</p>`;
@@ -1403,38 +1481,36 @@ function renderAddresses() {
   }
 
   listEl.innerHTML = addresses
-    .map(
-      (a) => `
-    <div class="step1SelectAdressBlockHome" data-id="${a.id}">
-      <div class="step1SelectAdressBlockHomeTop">
-        <div class="step1SelectAdressBlockHomeRadio">
-        <input type="radio" name="address" value="${a.id}" ${a.id === selectedId ? "checked" : ""}>
-          <p style="margin:0px;font-size:16px;font-weight:bold;">${a.title}</p>
-          <img src="images/Tag.png" style="width:51px;height:22px;margin-left:8px;" alt="${a.tag}">
-        </div>
+    .map((a) => {
+      const id = String(a.id);
+      return `
+        <div class="step1SelectAdressBlockHome" data-id="${id}">
+          <div class="step1SelectAdressBlockHomeTop">
+            <div class="step1SelectAdressBlockHomeRadio">
+              <input type="radio" name="address" value="${id}" ${id === selectedId ? "checked" : ""}>
+              <p style="margin:0px;font-size:16px;font-weight:bold;">${a.title || ""}</p>
+              <img src="images/Tag.png" style="width:51px;height:22px;margin-left:8px;" alt="${a.tag || ""}">
+            </div>
 
-        <div class="step1SelectAdressBlockHomeText">
-          <p style="margin:0px;font-size:16px;font-weight:bold;">${a.line}</p>
-          <p style="margin:0px;font-size:14px;">${a.phone}</p>
-        </div>
-      </div>
+            <div class="step1SelectAdressBlockHomeText">
+              <p style="margin:0px;font-size:16px;font-weight:bold;">${a.line || ""}</p>
+              <p style="margin:0px;font-size:14px;">${a.phone || ""}</p>
+            </div>
+          </div>
 
-      <div class="step1SelectAdressBlockHomeicons">
-        <img class="addrEdit" src="images/To edit.png" style="width:24px;height:24px;margin-right:16px;cursor:pointer;" alt="edit">
-        <img class="addrDelete" src="images/Close.png" style="width:24px;height:24px;cursor:pointer;" alt="delete">
-      </div>
-    </div>
-  `
-    )
+          <div class="step1SelectAdressBlockHomeicons">
+            <img class="addrEdit" src="images/To edit.png" style="width:24px;height:24px;margin-right:16px;cursor:pointer;" alt="edit">
+            <img class="addrDelete" src="images/Close.png" style="width:24px;height:24px;cursor:pointer;" alt="delete">
+          </div>
+        </div>
+      `;
+    })
     .join("");
 }
-
-function initStep1AddressPage() {
+async function initStep1AddressPage() {
   const listEl = document.getElementById("addressList");
   if (!listEl) return;
-
-  seedAddressesIfEmpty();
-  renderAddresses();
+  await loadAddressesFromAPI();
 }
 
 function bindStep1Nav() {
@@ -1461,26 +1537,27 @@ function bindAddressActionsOnce() {
   if (!host || host.dataset.bound === "1") return;
   host.dataset.bound = "1";
 
-  host.addEventListener("click", (e) => {
-    const card = e.target.closest(".step1SelectAdressBlockHome");
+host.addEventListener("click", async (e) => {
+      const card = e.target.closest(".step1SelectAdressBlockHome");
     if (!card) return;
 
     const id = card.dataset.id;
     if (!id) return;
-   localStorage.setItem(LS_SELECTED, id);
-  renderAddresses();
+   localStorage.setItem("selectedAddressId", id);
     if (e.target.classList.contains("addrDelete")) {
-      let list = readAddresses().filter((a) => a.id !== id);
-      writeAddresses(list);
+  try {
+    await apiFetch(`/addresses/${id}`, { method: "DELETE" });
 
-      const selected = localStorage.getItem(LS_SELECTED);
-      if (selected === id) {
-        localStorage.setItem(LS_SELECTED, list[0]?.id || "");
-      }
+    await loadAddressesFromAPI(); // DB'den tekrar çek
+    renderAddresses();
 
-      renderAddresses();
-      return;
-    }
+  } catch (err) {
+    console.error("DELETE address failed:", err.message);
+    alert("Adres silinemedi");
+  }
+
+  return;
+}
 
     if (e.target.classList.contains("addrEdit")) {
       let user = null;
@@ -1638,7 +1715,95 @@ function initStep2ShippingPage() {
     window.location.href = "Step3.html";
   });
 }
+function ensureAddressCreateModal() {
+  if (document.getElementById("addressCreateModal")) return;
 
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class="modal" id="addressCreateModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close="1"></div>
+
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="addrCreateTitle">
+        <div class="modal-head">
+          <h3 id="addrCreateTitle" style="margin:0;">Add Address</h3>
+          <button class="modal-x" type="button" data-close="1" aria-label="Close">×</button>
+        </div>
+
+        <div class="modal-body">
+          <label class="modal-label">Title</label>
+          <input id="addrCreateTitleInput" class="modal-input" type="text" placeholder="Home">
+
+          <label class="modal-label">Tag</label>
+          <input id="addrCreateTagInput" class="modal-input" type="text" placeholder="HOME / OFFICE">
+
+          <label class="modal-label">Address Line</label>
+          <input id="addrCreateLineInput" class="modal-input" type="text" placeholder="Street, City...">
+
+          <label class="modal-label">Phone</label>
+          <input id="addrCreatePhoneInput" class="modal-input" type="text" placeholder="(555) 555-5555">
+
+          <button id="addrCreateSaveBtn" class="modal-btn" type="button">Save</button>
+          <p id="addrCreateMsg" style="margin:12px 0 0 0;font-size:12px;opacity:.8;"></p>
+        </div>
+      </div>
+    </div>
+    `
+  );
+
+  const modal = document.getElementById("addressCreateModal");
+
+  function close() {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  modal.addEventListener("click", (e) => {
+    if (e.target?.dataset?.close) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) close();
+  });
+
+  document.getElementById("addrCreateSaveBtn").addEventListener("click", async () => {
+    const msg = document.getElementById("addrCreateMsg");
+    if (msg) msg.textContent = "";
+
+    const title = document.getElementById("addrCreateTitleInput").value.trim();
+    const tag = document.getElementById("addrCreateTagInput").value.trim() || "HOME";
+    const line = document.getElementById("addrCreateLineInput").value.trim();
+    const phone = document.getElementById("addrCreatePhoneInput").value.trim();
+
+    if (!title || !line) {
+      if (msg) msg.textContent = "Title ve Address Line boş olamaz.";
+      return;
+    }
+
+    try {
+      await apiFetch("/addresses", {
+        method: "POST",
+        body: JSON.stringify({ title, tag, line, phone }),
+      });
+
+      // ✅ tekrar çek + listeyi güncelle
+      await loadAddressesFromAPI();
+
+      close();
+    } catch (e) {
+      console.error(e);
+      if (msg) msg.textContent = e.message || "Adres eklenemedi";
+    }
+  });
+}
+
+function openAddressCreateModal() {
+  ensureAddressCreateModal();
+  const modal = document.getElementById("addressCreateModal");
+  document.getElementById("addrCreateMsg").textContent = "";
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+}
 function initStep3PaymentPage() {
   const back = document.getElementById("step3Back");
   const pay = document.getElementById("step3Pay");
@@ -1804,9 +1969,9 @@ async function initCartPage() {
   setupCheckoutBtn();
 }
 
-function initStep1Page() {
-  seedAddressesIfEmpty();
-  renderAddresses();
+async function initStep1Page() {
+  await loadAddressesFromAPI();  // ✅ API -> localStorage
+  renderAddresses();             // ✅ localStorage'tan çiz
   bindAddressActionsOnce();
   bindStep1Nav();
 }
@@ -1842,8 +2007,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (has("addressList")) {
-      initStep1Page();
-    }
+  await initStep1Page();
+}
 
     if (has("step2Back")) {
       initStep2Page();
@@ -1855,4 +2020,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (e) {
     console.error("Init error:", e);
   }
+  document.getElementById("addAddressBtn")?.addEventListener("click", openAddressCreateModal);
 });

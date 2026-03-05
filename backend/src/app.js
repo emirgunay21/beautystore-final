@@ -8,7 +8,8 @@ const seedRoutes = require("./routes/seed");
 const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/orders");
 const userRoutes = require("./routes/users");
-
+const commentsRoutes = require("./routes/comments");
+const addressesRouter = require("./routes/addresses");
 // DB bağlantı testi
 (async () => {
   try {
@@ -38,5 +39,6 @@ app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/users", userRoutes);
 app.use("/seed", seedRoutes);
-
+app.use("/comments", commentsRoutes);
+app.use("/addresses", addressesRouter);
 module.exports = app;
