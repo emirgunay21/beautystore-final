@@ -53,16 +53,9 @@ export async function getJSON(url) {
 
   return p;
 }
-export function getAddresses() {
-  return apiFetch("/addresses");
-}
 
-export function createAddress(data) {
-  return apiFetch("/addresses", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}
+
+// Address API helpers
 export function getAddresses() {
   return apiFetch("/addresses");
 }

@@ -94,5 +94,20 @@ router.put("/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ ok: false, message: "Server error" });
   }
 });
+router.put("/addresses/:id", authenticateToken, async (req, res) => {
+  const userId = req.user.id; // middleware nasıl set ediyorsa
+  const { id } = req.params;
+  const { title, tag, line, phone } = req.body || {};
 
+  if (!title || !line) {
+    return res.status(400).json({ ok: false, message: "title ve line zorunlu" });
+  }
+
+  await pool.query(
+    "UPDATE addresses SET title=?, tag=?, line=?, phone=? WHERE id=? AND userId=?",
+    [title, tag || "", line, phone || "", id, userId]
+  );
+
+  res.json({ ok: true });
+});
 module.exports = router;

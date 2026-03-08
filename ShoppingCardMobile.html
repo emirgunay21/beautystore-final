@@ -15,9 +15,10 @@
     <img src="images/Logo.png" style="width:65px;height:22px;" alt="logo">
     </a>
   </div>
+
 <div class="nav-search">
-    <input type="text" placeholder="Search">
-  </div>
+  <input id="navSearchInput" type="text" placeholder="Search">
+</div>>
 <div class="nav-links">
   <a href="Home.html" class="active">Home</a>
   <a href="ProductPage.html">Catalog</a>
@@ -45,14 +46,11 @@
 </div>
 
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-  <div class="mobile-menu-header">
-    <p style="margin:0;font-weight:600;">Menu</p>
-    <button class="mobile-menu-close" id="menuCloseBtn" aria-label="Close menu">✕</button>
-  </div>
-
   <div class="mobile-menu-search">
-    <input type="text" placeholder="Search">
-  </div>
+  <input id="mobileSearchInput" type="text" placeholder="Search">
+</div>
+<button class="mobile-menu-close" id="menuCloseBtn" aria-label="Close menu">✕</button>
+
 
   <nav class="mobile-menu-links">
     <a href="Home.html">Home</a>
@@ -196,11 +194,60 @@
 
       <button id="loginBtn" class="modal-btn" type="button">Login</button>
       <p id="loginMsg" style="margin:12px 0 0 0;font-size:12px;opacity:.8;"></p>
+      <p style="margin-top:12px;font-size:13px;">
+  Don't have an account?
+  <span id="showRegister" style="cursor:pointer;color:#007bff;">Sign up</span>
+</p>
+
+<div id="registerBox" style="display:none; margin-top:16px;">
+  <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+    
+    <label class="modal-label" for="registerName">Name</label>
+    <input
+      id="registerName"
+      class="modal-input"
+      type="text"
+      placeholder="Your name"
+      style="width:100%; box-sizing:border-box;"
+    >
+
+    <label class="modal-label" for="registerEmail">Email</label>
+    <input
+      id="registerEmail"
+      class="modal-input"
+      type="email"
+      placeholder="you@example.com"
+      style="width:100%; box-sizing:border-box;"
+    >
+
+    <label class="modal-label" for="registerPassword">Password</label>
+    <input
+      id="registerPassword"
+      class="modal-input"
+      type="password"
+      placeholder="••••••••"
+      style="width:100%; box-sizing:border-box;"
+    >
+
+    <button
+      id="registerBtn"
+      class="modal-btn"
+      type="button"
+      style="margin-top:8px; width:100%;"
+    >
+      Create Account
+    </button>
+
+    <p id="registerMsg" style="margin:0; font-size:12px;"></p>
+  </div>
+</div>
+</div>
+
+</div>
     </div>
   </div>
 </div>
-  <script src="data.js" defer></script>
-<script src="app.js" defer></script>
+ <script type="module" src="./js/main.js"></script>
     </body>
 </html>
         

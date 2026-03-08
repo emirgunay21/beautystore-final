@@ -1635,38 +1635,38 @@ function ensureAddressEditModal() {
     if (e.key === "Escape" && modal.classList.contains("open")) close();
   });
 
-  saveBtn.addEventListener("click", () => {
-    const id = document.getElementById("addrEditId").value;
+ saveBtn.addEventListener("click", async () => {
+  const id = document.getElementById("addrEditId").value;
 
-    const title = document.getElementById("addrEditTitleInput").value.trim();
-    const tag = document.getElementById("addrEditTagInput").value.trim();
-    const line = document.getElementById("addrEditLineInput").value.trim();
-    const phone = document.getElementById("addrEditPhoneInput").value.trim();
+  const title = document.getElementById("addrEditTitleInput").value.trim();
+  const tag = document.getElementById("addrEditTagInput").value.trim();
+  const line = document.getElementById("addrEditLineInput").value.trim();
+  const phone = document.getElementById("addrEditPhoneInput").value.trim();
 
-    if (!title || !line) {
-      const msg = document.getElementById("addrEditMsg");
-      if (msg) msg.textContent = "Title ve Address boş olamaz.";
-      return;
-    }
+  const msg = document.getElementById("addrEditMsg");
+  if (msg) msg.textContent = "";
 
-    const list = readAddresses();
-    const idx = list.findIndex((a) => a.id === id);
-    if (idx === -1) return;
+  if (!title || !line) {
+    if (msg) msg.textContent = "Title ve Address boş olamaz.";
+    return;
+  }
 
-    list[idx] = {
-      ...list[idx],
-      title,
-      tag: tag || list[idx].tag || "Home",
-      line,
-      phone: phone || list[idx].phone || "",
-    };
+  try {
+    await apiFetch(`/addresses/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ title, tag, line, phone }),
+    });
 
-    writeAddresses(list);
-    renderAddresses();
+    // ✅ DB’den tekrar çek -> liste güncellensin
+    await loadAddressesFromAPI();
+
     close();
-  });
+  } catch (e) {
+    console.error(e);
+    if (msg) msg.textContent = e.message || "Adres güncellenemedi";
+  }
+});
 }
-
 function openAddressEditModal(addr) {
   ensureAddressEditModal();
 
@@ -1902,35 +1902,58 @@ async function renderPaymentSummary() {
     .join("");
 
   setPaymentTotals(subtotal);
+  // ✅ Address artık API/DB'den
+  try {
+    const ares = await apiFetch("/addresses");
+    const list = ares.addresses || [];
 
-  // Adres / shipping kısmı şimdilik localStorage kalabilir (hocanın isteği sonra)
-  const addresses = JSON.parse(localStorage.getItem("addresses") || "[]");
-  const selectedAddressId = localStorage.getItem("selectedAddressId");
-  const chosen = addresses.find((a) => String(a.id) === String(selectedAddressId));
+    const selectedAddressId = localStorage.getItem("selectedAddressId");
+    const chosen =
+      list.find((a) => String(a.id) === String(selectedAddressId)) || list[0];
 
-  const addrEl = document.getElementById("paymentAddressText");
-  if (addrEl) addrEl.textContent = chosen ? chosen.line : "-";
-
-  const selectedShippingId = localStorage.getItem("selectedShippingId");
-  const shipEl = document.getElementById("paymentShippingText");
-  if (shipEl) shipEl.textContent = selectedShippingId || "-";
+    const addrEl = document.getElementById("paymentAddressText");
+if (addrEl) {
+  addrEl.textContent = chosen
+    ? `${chosen.line} | ${chosen.phone || "-"}`
+    : "-";
 }
-function renderPaymentAddressAndShipping() {
+
+    // seçili yoksa ilkini seç (UI stabil kalsın)
+    if (!selectedAddressId && chosen?.id) {
+      localStorage.setItem("selectedAddressId", String(chosen.id));
+    }
+  } catch (e) {
+    const addrEl = document.getElementById("paymentAddressText");
+    if (addrEl) addrEl.textContent = "-";
+  }
+
+}
+async function renderPaymentAddressAndShipping() {
   const addressEl = document.getElementById("paymentAddressText");
   const shipEl = document.getElementById("paymentShippingText");
   if (!addressEl || !shipEl) return;
 
-  
-  const addresses = JSON.parse(localStorage.getItem("addresses") || "[]");
-  const selectedAddressId = localStorage.getItem("selectedAddressId");
+  // ✅ Address -> API
+  try {
+    const ares = await apiFetch("/addresses");
+    const list = ares.addresses || [];
 
-  const addr = addresses.find(a => String(a.id) === String(selectedAddressId));
+    const selectedAddressId = localStorage.getItem("selectedAddressId");
+    const chosen =
+      list.find((a) => String(a.id) === String(selectedAddressId)) || list[0];
 
-  addressEl.textContent = addr
-    ? addr.line
-    : "-";
+  addressEl.textContent = chosen
+  ? (chosen.line + " | " + (chosen.phone || "-"))
+  : "-";
 
-  // Shipping
+    if (!selectedAddressId && chosen?.id) {
+      localStorage.setItem("selectedAddressId", String(chosen.id));
+    }
+  } catch {
+    addressEl.textContent = "-";
+  }
+
+  // Shipping (şimdilik localStorage)
   const selectedShippingId =
     localStorage.getItem("selectedShippingId") ||
     localStorage.getItem("selectedShipping");
@@ -1980,10 +2003,10 @@ function initStep2Page() {
   initStep2ShippingPage();
 }
 
-function initStep3Page() {
+async function initStep3Page() {
   initStep3PaymentPage();
-  renderPaymentSummary();
-  renderPaymentAddressAndShipping();
+  await renderPaymentSummary();
+  await renderPaymentAddressAndShipping();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
