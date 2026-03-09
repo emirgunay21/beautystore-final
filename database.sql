@@ -39,7 +39,28 @@ CREATE TABLE IF NOT EXISTS products (
         ON UPDATE CASCADE
 );
 
--- 4) ADDRESSES
+-- 4) CART_ITEMS
+CREATE TABLE IF NOT EXISTS cart_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_cart_user_product UNIQUE (user_id, product_id),
+
+    CONSTRAINT fk_cart_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_cart_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- 5) ADDRESSES
 CREATE TABLE IF NOT EXISTS addresses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -59,7 +80,7 @@ CREATE TABLE IF NOT EXISTS addresses (
         ON UPDATE CASCADE
 );
 
--- 5) ORDERS
+-- 6) ORDERS
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -82,7 +103,7 @@ CREATE TABLE IF NOT EXISTS orders (
         ON UPDATE CASCADE
 );
 
--- 6) ORDER_ITEMS
+-- 7) ORDER_ITEMS
 CREATE TABLE IF NOT EXISTS order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
@@ -103,24 +124,23 @@ CREATE TABLE IF NOT EXISTS order_items (
         ON UPDATE CASCADE
 );
 
--- 7) REVIEWS
-CREATE TABLE IF NOT EXISTS reviews (
+-- 8) COMMENTS
+CREATE TABLE IF NOT EXISTS comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    product_id INT NOT NULL,
-    rating TINYINT NOT NULL,
-    comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    productId INT NOT NULL,
+    userId INT NOT NULL,
+    userEmail VARCHAR(150) NOT NULL,
+    stars TINYINT NOT NULL DEFAULT 5,
+    text TEXT NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_reviews_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
+    CONSTRAINT fk_comments_product
+        FOREIGN KEY (productId) REFERENCES products(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
 
-    CONSTRAINT fk_reviews_product
-        FOREIGN KEY (product_id) REFERENCES products(id)
+    CONSTRAINT fk_comments_user
+        FOREIGN KEY (userId) REFERENCES users(id)
         ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    CONSTRAINT uq_user_product_review UNIQUE (user_id, product_id)
+        ON UPDATE CASCADE
 );
