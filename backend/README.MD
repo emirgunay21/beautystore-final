@@ -1,59 +1,214 @@
-# BeautyStore Full Stack E-Commerce Project
+# BeautyStore E-Ticaret Projesi
 
-Bu proje Node.js, Express ve MySQL kullanılarak geliştirilmiş uçtan uca (Full-Stack) çalışan bir e-ticaret uygulamasıdır. Frontend ve Backend birbirine bağlıdır ve veri MySQL veritabanından çekilmektedir.
+## Proje Hakkında
 
-KURULUM:
+BeautyStore, bitirme projesi kapsamında geliştirilmiş bir e-ticaret web uygulamasıdır.  
+Kullanıcıların ürünleri görüntüleyebildiği, sepete ürün ekleyebildiği, ürünlere yorum yapabildiği, adres yönetimi gerçekleştirebildiği ve sipariş oluşturabildiği bir sistemdir.
 
-1) MySQL kurulu olmalıdır.
+Proje modern yazılım geliştirme prensiplerine uygun olacak şekilde yeniden yapılandırılmıştır.
 
-2) Proje klasöründe bulunan "database.sql" dosyasını MySQL üzerinde çalıştırın. Bu işlem:
-- beautystore veritabanını oluşturur
-- products ve users tablolarını oluşturur
+Bu kapsamda:
 
-3) Terminal açın ve backend klasörüne girin:
+- MVC mimarisi uygulanmıştır
+- REST API altyapısı kurulmuştur
+- Veriler veritabanı üzerinden yönetilmektedir
+- Frontend modüler hale getirilmiştir
+- Git ile versiyon kontrolü uygulanmıştır
 
-cd backend
+---
 
-4) Bağımlılıkları yükleyin:
+# Kullanılan Teknolojiler
 
-npm install
+## Frontend
 
-5) backend klasörünün içine ".env" isimli bir dosya oluşturun ve aşağıdaki bilgileri ekleyin:
+- HTML5  
+- CSS3  
+- JavaScript (ES6 Modules)
 
-PORT=3001
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=YOUR_PASSWORD
-DB_NAME=beautystore
-JWT_SECRET=supersecretkey
+## Backend
 
-(DB_PASSWORD kısmına kendi MySQL şifrenizi yazın.)
+- Node.js  
+- Express.js  
 
-6) Backend’i başlatın:
+## Veritabanı
 
-npm start
+- MySQL
 
-veya
+## Kimlik Doğrulama
 
-node src/server.js
+- JWT (JSON Web Token)
 
-Backend şu adreste çalışacaktır:
-http://localhost:3001
+## Versiyon Kontrol
 
-7) Tarayıcıda test edin:
-http://localhost:3001/products
+- Git  
+- GitHub  
 
-Ürünler JSON formatında geliyorsa veritabanı bağlantısı başarılıdır.
+---
 
-8) Frontend’i çalıştırmak için proje ana klasöründeki Home.html dosyasını Live Server ile veya doğrudan tarayıcıda açabilirsiniz.
+# Backend Mimarisi
 
-Frontend veriyi:
-http://localhost:3001/products
-adresinden çekmektedir.
+Backend tarafında **Model-View-Controller (MVC)** mimarisi uygulanmıştır.
 
-Backend çalışmadan frontend veri göstermez.
+Proje klasör yapısı:
 
-Veritabanı boşsa aşağıdaki endpoint kullanılabilir:
-http://localhost:3001/seed/products?category=beauty
+src  
+ ├ controllers  
+ ├ models  
+ ├ routes  
+ ├ middleware  
+ ├ app.js  
+ └ server.js  
 
-Bu proje Backend + Database entegrasyonu içeren Full-Stack çalışan bir uygulamadır.
+### Controllers
+
+API isteklerini karşılayan ve iş mantığını yöneten katmandır.
+
+### Models
+
+Veritabanı ile iletişim kuran ve SQL sorgularını yöneten katmandır.
+
+### Routes
+
+API endpointlerini tanımlar ve ilgili controller fonksiyonlarına yönlendirir.
+
+### Middleware
+
+JWT doğrulama gibi güvenlik işlemleri bu katmanda gerçekleştirilir.
+
+---
+
+# API Endpointleri
+
+## Kimlik Doğrulama
+
+POST /auth/register  
+POST /auth/login  
+
+## Ürünler
+
+GET /products  
+GET /products/:id  
+
+## Sepet
+
+GET /cart  
+POST /cart  
+PUT /cart/:productId  
+DELETE /cart/:productId  
+
+## Adresler
+
+GET /addresses  
+POST /addresses  
+PUT /addresses/:id  
+DELETE /addresses/:id  
+
+## Yorumlar
+
+GET /comments/:productId  
+POST /comments  
+
+## Siparişler
+
+GET /orders  
+POST /orders  
+
+---
+
+# Veritabanı Yapısı
+
+Projede aşağıdaki temel tablolar oluşturulmuştur:
+
+- users  
+- products  
+- categories  
+- cart_items  
+- orders  
+- order_items  
+- addresses  
+- comments  
+
+Tablolar arasında **Foreign Key ilişkileri** kurulmuş ve veri bütünlüğü sağlanmıştır.
+
+---
+
+# Projede Yapılan Geliştirmeler
+
+Projenin ilk sürümünde veriler LocalStorage üzerinde tutulmakta ve JavaScript kodu tek bir büyük dosyada yer almaktaydı.
+
+Aşağıdaki iyileştirmeler gerçekleştirilmiştir.
+
+### API Tabanlı Veri Yönetimi
+
+Sepet, yorum ve adres verileri artık LocalStorage yerine REST API aracılığıyla veritabanında saklanmaktadır.
+
+### MVC Mimarisine Geçiş
+
+Backend kodu aşağıdaki katmanlara ayrılmıştır:
+
+- Controllers  
+- Models  
+- Routes  
+
+### Modüler Frontend Yapısı
+
+1700 satırlık büyük JavaScript dosyası sayfa bazlı modüllere ayrılmıştır.
+
+js  
+ ├ api.js  
+ ├ cart.js  
+ ├ auth.js  
+ ├ navbar.js  
+
+Pages  
+ ├ home.js  
+ ├ productPage.js  
+ ├ productDetails.js  
+ ├ cartPage.js  
+ ├ step1.js  
+ ├ step2.js  
+ └ step3.js  
+
+### Kimlik Doğrulama
+
+JWT tabanlı kimlik doğrulama sistemi kullanılarak yetkisiz erişim engellenmiştir.
+
+---
+
+# Projeyi Çalıştırma
+
+## 1 Projeyi Klonlama
+
+git clone https://github.com/kullaniciadi/beautystore.git
+
+## 2 Backend Bağımlılıklarını Kurma
+
+cd backend  
+npm install  
+
+## 3 Ortam Değişkenleri
+
+.env dosyası oluşturulmalıdır:
+
+PORT=3001  
+DB_HOST=localhost  
+DB_USER=root  
+DB_PASSWORD=şifre  
+DB_NAME=beautystore  
+JWT_SECRET=secret_key  
+
+## 4 Backend Sunucusunu Başlatma
+
+npm run dev  
+
+## 5 Frontend'i Çalıştırma
+
+Frontend dosyaları Live Server veya herhangi bir yerel sunucu ile çalıştırılabilir.
+
+---
+
+# Geliştirici
+
+Emir Günay  
+
+Bitirme Projesi – Full Stack Web Uygulaması
