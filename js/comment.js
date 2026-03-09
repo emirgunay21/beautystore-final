@@ -1,26 +1,25 @@
 "use strict";
 
-export function getComments() {
-  return JSON.parse(localStorage.getItem("commentsByProduct")) || {};
+import { apiFetch } from "./api.js";
+
+export async function getProductComments(productId) {
+  const data = await apiFetch(`/comments/${productId}`, {
+    method: "GET",
+  });
+  return Array.isArray(data.comments) ? data.comments : [];
 }
 
-export function saveComments(data) {
-  localStorage.setItem("commentsByProduct", JSON.stringify(data));
-}
+export async function addComment(productId, comment) {
+  const payload = {
+    productId: Number(productId),
+    stars: Number(comment.rating || 5),
+    text: comment.text || "",
+  };
 
-export function addComment(productId, comment) {
-  const allComments = getComments();
+  const data = await apiFetch("/comments", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 
-  if (!allComments[productId]) {
-    allComments[productId] = [];
-  }
-
-  allComments[productId].push(comment);
-
-  saveComments(allComments);
-}
-
-export function getProductComments(productId) {
-  const allComments = getComments();
-  return allComments[productId] || [];
+  return data;
 }

@@ -1,5 +1,8 @@
 "use strict";
 
+import { getAddresses, apiFetch } from "../api.js";
+import { getCart } from "../cart.js";
+
 function getUserId() {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -9,39 +12,13 @@ function getUserId() {
   }
 }
 
-function getAddressesKey() {
-  return "addresses_" + getUserId();
-}
-
 function getSelectedAddressKey() {
-  return "selectedAddressId_" + getUserId();
-}
-
-function getCartKey() {
-  return "cart_" + getUserId();
-}
-
-function readAddresses() {
-  try {
-    const data = JSON.parse(localStorage.getItem(getAddressesKey()));
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
+  return "selectedAddressId";
 }
 
 function money(n) {
   const x = Number(n) || 0;
   return `$${x.toFixed(0)}`;
-}
-
-function getCart() {
-  try {
-    const cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
-    return Array.isArray(cart) ? cart : [];
-  } catch {
-    return [];
-  }
 }
 
 function setPaymentTotals(subtotal) {
@@ -60,11 +37,11 @@ function setPaymentTotals(subtotal) {
   if (totalEl) totalEl.textContent = money(total);
 }
 
-function renderPaymentSummary() {
+async function renderPaymentSummary() {
   const wrap = document.getElementById("paymentSummaryItems");
   if (!wrap) return;
 
-  const cart = getCart();
+  const cart = await getCart();
 
   if (!cart.length) {
     wrap.innerHTML = `<p style="padding:12px;color:#6C6C6C;">Sepet boş</p>`;
@@ -100,19 +77,26 @@ function renderPaymentSummary() {
   setPaymentTotals(subtotal);
 }
 
-function renderPaymentAddressAndShipping() {
+async function renderPaymentAddressAndShipping() {
   const addressEl = document.getElementById("paymentAddressText");
   const shipEl = document.getElementById("paymentShippingText");
 
-  const list = readAddresses();
-  const selectedAddressId = localStorage.getItem(getSelectedAddressKey());
-  const chosen =
-    list.find((a) => String(a.id) === String(selectedAddressId)) || list[0];
+  try {
+    const data = await getAddresses();
+    const list = data.addresses || [];
+    const selectedAddressId = localStorage.getItem(getSelectedAddressKey());
 
-  if (addressEl) {
-    addressEl.textContent = chosen
-      ? `${chosen.line} | ${chosen.phone || "-"}`
-      : "-";
+    const chosen =
+      list.find((a) => String(a.id) === String(selectedAddressId)) || list[0];
+
+    if (addressEl) {
+      addressEl.textContent = chosen
+        ? `${chosen.title} | ${chosen.line} | ${chosen.phone || "-"}`
+        : "-";
+    }
+  } catch (err) {
+    console.error("Step3 address load error:", err);
+    if (addressEl) addressEl.textContent = "-";
   }
 
   const selectedShippingId = localStorage.getItem("selectedShippingId");
@@ -132,9 +116,21 @@ function initStep3PaymentPage() {
   }
 
   if (pay) {
-    pay.addEventListener("click", () => {
+    pay.addEventListener("click", async () => {
       alert("Ödeme başarılı ✅");
-      localStorage.removeItem(getCartKey());
+
+      try {
+        const cart = await getCart();
+
+        for (const item of cart) {
+          await apiFetch(`/cart/${item.id}`, {
+            method: "DELETE",
+          });
+        }
+      } catch (err) {
+        console.error("Cart clear error:", err);
+      }
+
       window.location.href = "Home.html";
     });
   }
@@ -142,6 +138,6 @@ function initStep3PaymentPage() {
 
 export async function initStep3Page() {
   initStep3PaymentPage();
-  renderPaymentSummary();
-  renderPaymentAddressAndShipping();
+  await renderPaymentSummary();
+  await renderPaymentAddressAndShipping();
 }

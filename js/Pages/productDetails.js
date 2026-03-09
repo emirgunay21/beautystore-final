@@ -2,6 +2,10 @@
 
 import { API_BASE, getJSON } from "../api.js";
 import { addToCart, updateCartBadge } from "../cart.js";
+import {
+  getProductComments,
+  addComment as addCommentApi,
+} from "../comment.js";
 
 function setText(id, value) {
   const el = document.getElementById(id);
@@ -35,30 +39,6 @@ function getCurrentUser() {
   }
 }
 
-function getComments() {
-  return JSON.parse(localStorage.getItem("commentsByProduct")) || {};
-}
-
-function saveComments(data) {
-  localStorage.setItem("commentsByProduct", JSON.stringify(data));
-}
-
-function addComment(productId, comment) {
-  const allComments = getComments();
-
-  if (!allComments[productId]) {
-    allComments[productId] = [];
-  }
-
-  allComments[productId].push(comment);
-  saveComments(allComments);
-}
-
-function getProductComments(productId) {
-  const allComments = getComments();
-  return allComments[productId] || [];
-}
-
 function renderDetailsSection(p) {
   setText("pdDetailsText", p.description || "");
   setText("pdSpec1", p.brand || "-");
@@ -71,7 +51,14 @@ function renderDetailsSection(p) {
   if (extra) {
     const tags = Array.isArray(p.tags) ? p.tags : [];
     extra.innerHTML = tags.length
-      ? tags.map((t) => `<p style="font-size:15px;color:black;font-weight:bold;margin:0;">${String(t)}</p>`).join("")
+      ? tags
+          .map(
+            (t) =>
+              `<p style="font-size:15px;color:black;font-weight:bold;margin:0;">${String(
+                t
+              )}</p>`
+          )
+          .join("")
       : `<p style="font-size:15px;color:black;font-weight:bold;margin:0;">-</p>`;
   }
 
@@ -90,8 +77,12 @@ async function renderRelatedProducts(p) {
       return;
     }
 
-    const data = await getJSON(`${API_BASE}/products?category=${cat}&limit=12&skip=0`);
-    let list = (data.products || data.items || []).filter((x) => Number(x.id) !== Number(p.id));
+    const data = await getJSON(
+      `${API_BASE}/products?category=${cat}&limit=12&skip=0`
+    );
+    let list = (data.products || data.items || []).filter(
+      (x) => Number(x.id) !== Number(p.id)
+    );
     list = list.slice(0, 4);
 
     let html = "";
@@ -162,7 +153,12 @@ export async function initProductDetailsPage() {
         <div class="productPageFiltersMobileTop">
           <img src="${p.thumbnail}" style="width:263.59px;height:329.24px;" alt="${p.title}">
           <div class="imageFilters">
-            ${thumbs.map((src) => `<img src="${src}" style="width:74px;height:66px;" alt="thumb">`).join("")}
+            ${thumbs
+              .map(
+                (src) =>
+                  `<img src="${src}" style="width:74px;height:66px;" alt="thumb">`
+              )
+              .join("")}
           </div>
         </div>
 
@@ -190,11 +186,15 @@ export async function initProductDetailsPage() {
             </div>
             <div class="metaItem">
               <p class="metaLabel">Stock</p>
-              <p class="metaValue">${Number(p.stock || 0) > 0 ? `${p.stock} pcs` : "Out of stock"}</p>
+              <p class="metaValue">${
+                Number(p.stock || 0) > 0 ? `${p.stock} pcs` : "Out of stock"
+              }</p>
             </div>
           </div>
 
-          <p style="font-size:15px;color:#6C6C6C;margin-top:18px;">${p.description || ""}</p>
+          <p style="font-size:15px;color:#6C6C6C;margin-top:18px;">${
+            p.description || ""
+          }</p>
 
           <div class="productPageDetailsMobileButtons">
             <button id="addToCartBtn"
@@ -232,7 +232,9 @@ export async function initProductDetailsPage() {
       });
 
       bc.querySelector("[data-bc='category']")?.addEventListener("click", () => {
-        window.location.href = `ProductPage.html?category=${encodeURIComponent(p.category)}`;
+        window.location.href = `ProductPage.html?category=${encodeURIComponent(
+          p.category
+        )}`;
       });
     }
 
@@ -244,56 +246,43 @@ export async function initProductDetailsPage() {
 
     const seedComments = [
       {
-        name: "Grace Carey",
-        stars: 4,
+        user: "Grace Carey",
+        rating: 4,
         text: "Great product, I liked the overall quality.",
         avatar: "images/gracepic.png",
       },
       {
-        name: "Ronald Richards",
-        stars: 5,
+        user: "Ronald Richards",
+        rating: 5,
         text: "Price-performance is good. Would recommend.",
         avatar: "images/ronaldpic.png",
       },
       {
-        name: "Darcy King",
-        stars: 4,
+        user: "Darcy King",
+        rating: 4,
         text: "Looks nice and works as expected.",
         avatar: "images/darcypic.png",
       },
     ];
 
-    function renderCommentsList() {
+    async function renderCommentsList() {
       if (!commentsRoot) return;
 
-      let saved = getProductComments(String(p.id));
-
-      if (!saved.length) {
-        const seeded = seedComments.map((c) => ({
-          user: c.name,
-          text: c.text,
-          rating: c.stars,
-          avatar: c.avatar,
-        }));
-        const all = getComments();
-        all[String(p.id)] = seeded;
-        saveComments(all);
-        saved = seeded;
+      let saved = [];
+      try {
+        saved = await getProductComments(String(p.id));
+      } catch (err) {
+        console.error("Comments fetch error:", err);
       }
 
-      commentsRoot.innerHTML = saved
-        .map((c, idx) => {
-          const name = c.user || "User";
-          const text = c.text || "";
-          const rating = Number(c.rating || 5);
-          const avatar =
-            c.avatar ||
-            (idx % 3 === 0
-              ? "images/gracepic.png"
-              : idx % 3 === 1
-              ? "images/ronaldpic.png"
-              : "images/darcypic.png");
+      const commentsToShow = saved.length ? saved : seedComments;
 
+      commentsRoot.innerHTML = commentsToShow
+        .map((c, idx) => {
+          const name = c.userName || c.user || c.userEmail || "User";
+const text = c.text || c.comment || "";
+const rating = Number(c.rating || c.stars || 5);
+const avatar = "images/User.png";
           return `
             <div class="reviewAndCommentsGrace">
               <img src="${avatar}" style="width:48px;height:48px;margin-left:16px;margin-top:24px;" alt="User">
@@ -312,9 +301,9 @@ export async function initProductDetailsPage() {
         .join("");
     }
 
-    renderCommentsList();
+    await renderCommentsList();
 
-    sendBtn?.addEventListener("click", () => {
+    sendBtn?.addEventListener("click", async () => {
       const user = getCurrentUser();
 
       if (!user) {
@@ -330,17 +319,20 @@ export async function initProductDetailsPage() {
         return;
       }
 
-      addComment(String(p.id), {
-        user: user.name || user.email || "User",
-        text,
-        rating,
-        avatar: "images/User.png",
-      });
+      try {
+        await addCommentApi(String(p.id), {
+          text,
+          rating,
+        });
 
-      if (input) input.value = "";
-      if (starsSel) starsSel.value = "5";
+        if (input) input.value = "";
+        if (starsSel) starsSel.value = "5";
 
-      renderCommentsList();
+        await renderCommentsList();
+      } catch (err) {
+        console.error("Add comment error:", err);
+        alert("Yorum eklenemedi");
+      }
     });
 
     if (toggleBtn && commentsRoot) {
@@ -353,11 +345,14 @@ export async function initProductDetailsPage() {
     }
 
     const addBtn = document.getElementById("addToCartBtn");
-    addBtn?.addEventListener("click", async () => {
-      addToCart(p);
-      await updateCartBadge();
-      alert("Sepete eklendi ✅");
-    });
+addBtn?.addEventListener("click", async () => {
+  const added = await addToCart(p);
+
+  if (!added) return;
+
+  await updateCartBadge();
+  alert("Sepete eklendi ✅");
+});
   } catch (err) {
     console.error(err);
     root.innerHTML = "<p style='padding:16px;'>Ürün yüklenemedi.</p>";

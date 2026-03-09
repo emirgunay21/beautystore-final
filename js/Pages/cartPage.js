@@ -18,11 +18,11 @@ function updateSummary(subtotal) {
   if (s4) s4.textContent = `$${total.toFixed(0)}`;
 }
 
-function renderCartPage() {
+async function renderCartPage() {
   const listEl = document.getElementById("cartList");
   if (!listEl) return;
 
-  const cart = getCart();
+  const cart = await getCart();
 
   if (!cart.length) {
     listEl.innerHTML = `<p style="padding:12px;color:#6C6C6C;">Sepet boş</p>`;
@@ -74,7 +74,7 @@ function renderCartPage() {
       if (!row) return;
 
       const productId = Number(row.dataset.productId);
-      const cart = getCart();
+      const cart = await getCart();
       const item = cart.find((x) => Number(x.id) === productId);
       if (!item) return;
 
@@ -84,23 +84,23 @@ function renderCartPage() {
         item.qty = (item.qty || 1) - 1;
         if (item.qty <= 0) {
           const next = cart.filter((x) => Number(x.id) !== productId);
-          saveCart(next);
-          renderCartPage();
+          await saveCart(next);
+          await renderCartPage();
           await updateCartBadge();
           return;
         }
       } else if (e.target.closest("[data-remove='1']")) {
         const next = cart.filter((x) => Number(x.id) !== productId);
-        saveCart(next);
-        renderCartPage();
+        await saveCart(next);
+        await renderCartPage();
         await updateCartBadge();
         return;
       } else {
         return;
       }
 
-      saveCart(cart);
-      renderCartPage();
+      await saveCart(cart);
+      await renderCartPage();
       await updateCartBadge();
     });
   }
@@ -116,7 +116,7 @@ function setupCheckoutBtn() {
 }
 
 export async function initCartPage() {
-  renderCartPage();
+  await renderCartPage();
   setupCheckoutBtn();
   await updateCartBadge();
 }

@@ -1,47 +1,13 @@
 "use strict";
 
-function getUserId() {
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
-    return user?.id || user?.email || "guest";
-  } catch {
-    return "guest";
-  }
-}
+import { getAddresses, createAddress, apiFetch } from "../api.js";
 
-function getSelectedAddressKey() {
-  return "selectedAddressId_" + getUserId();
-}
-
-function getAddressesKey() {
-  return "addresses_" + getUserId();
-}
-
-function readAddresses() {
-  try {
-    const data = JSON.parse(localStorage.getItem(getAddressesKey()));
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeAddresses(list) {
-  localStorage.setItem(getAddressesKey(), JSON.stringify(list));
-}
-
-function seedAddressesIfEmpty() {
-  
-}
+let addresses = [];
+let selectedId = localStorage.getItem("selectedAddressId") || null;
 
 function renderAddresses() {
   const listEl = document.getElementById("addressList");
   if (!listEl) return;
-
-  const addresses = readAddresses();
-  const selectedId =
-    localStorage.getItem(getSelectedAddressKey()) ||
-    (addresses[0] && String(addresses[0].id));
 
   if (!addresses.length) {
     listEl.innerHTML = `<p style="margin:12px 0;color:#6C6C6C;">No saved address.</p>`;
@@ -51,18 +17,19 @@ function renderAddresses() {
   listEl.innerHTML = addresses
     .map((a) => {
       const id = String(a.id);
+
       return `
         <div class="step1SelectAdressBlockHome" data-id="${id}">
           <div class="step1SelectAdressBlockHomeTop">
             <div class="step1SelectAdressBlockHomeRadio">
               <input type="radio" name="address" value="${id}" ${id === selectedId ? "checked" : ""}>
-              <p style="margin:0;font-size:16px;font-weight:bold;">${a.title || ""}</p>
+              <p style="margin:0;font-size:16px;font-weight:bold;">${a.title}</p>
               <img src="images/Tag.png" style="width:51px;height:22px;margin-left:8px;" alt="${a.tag || ""}">
             </div>
 
             <div class="step1SelectAdressBlockHomeText">
-              <p style="margin:0;font-size:16px;font-weight:bold;">${a.line || ""}</p>
-              <p style="margin:0;font-size:14px;">${a.phone || ""}</p>
+              <p style="margin:0;font-size:16px;font-weight:bold;">${a.line}</p>
+              <p style="margin:0;font-size:14px;">${a.phone}</p>
             </div>
           </div>
 
@@ -75,12 +42,34 @@ function renderAddresses() {
     .join("");
 }
 
-function bindAddressActionsOnce() {
+async function loadAddresses() {
+  try {
+    const data = await getAddresses();
+    addresses = data.addresses || [];
+
+    if (addresses.length) {
+      const stillExists = addresses.find((a) => String(a.id) === String(selectedId));
+      if (!stillExists) {
+        selectedId = String(addresses[0].id);
+        localStorage.setItem("selectedAddressId", selectedId);
+      }
+    } else {
+      selectedId = null;
+      localStorage.removeItem("selectedAddressId");
+    }
+
+    renderAddresses();
+  } catch (err) {
+    console.error("Address load error:", err);
+  }
+}
+
+function bindAddressActions() {
   const host = document.getElementById("addressList");
   if (!host || host.dataset.bound === "1") return;
   host.dataset.bound = "1";
 
-  host.addEventListener("click", (e) => {
+  host.addEventListener("click", async (e) => {
     const card = e.target.closest(".step1SelectAdressBlockHome");
     if (!card) return;
 
@@ -88,26 +77,23 @@ function bindAddressActionsOnce() {
     if (!id) return;
 
     if (e.target.classList.contains("addrDelete")) {
-      const list = readAddresses().filter((a) => String(a.id) !== String(id));
-      writeAddresses(list);
-
-      const selectedId = localStorage.getItem(getSelectedAddressKey());
-      if (selectedId === id) {
-        if (list[0]) localStorage.setItem(getSelectedAddressKey(), list[0].id);
-        else localStorage.removeItem(getSelectedAddressKey());
+      try {
+        await apiFetch(`/addresses/${id}`, { method: "DELETE" });
+        await loadAddresses();
+      } catch (err) {
+        console.error("Delete address error:", err);
+        alert("Address delete error");
       }
-
-      renderAddresses();
       return;
     }
 
-    localStorage.setItem(getSelectedAddressKey(), id);
+    selectedId = id;
+    localStorage.setItem("selectedAddressId", selectedId);
     renderAddresses();
   });
 }
 
 function bindAddAddressButton() {
-
   const btn = document.getElementById("addAddressBtn");
   const modal = document.getElementById("addressModal");
   const closeBtn = document.getElementById("closeAddressModal");
@@ -117,14 +103,8 @@ function bindAddAddressButton() {
   if (!btn) return;
 
   btn.addEventListener("click", () => {
-
-  if (getUserId() === "guest") {
-    alert("Please login first");
-    return;
-  }
-
-  modal.style.display = "flex";
-});
+    modal.style.display = "flex";
+  });
 
   closeBtn?.addEventListener("click", () => {
     modal.style.display = "none";
@@ -134,38 +114,26 @@ function bindAddAddressButton() {
     modal.style.display = "none";
   });
 
-  saveBtn?.addEventListener("click", () => {
+  saveBtn?.addEventListener("click", async () => {
+    const title = document.getElementById("addrTitle").value.trim();
+    const tag = document.getElementById("addrTag").value.trim();
+    const line = document.getElementById("addrLine").value.trim();
+    const phone = document.getElementById("addrPhone").value.trim();
 
-    const title = document.getElementById("addrTitle").value;
-    const tag = document.getElementById("addrTag").value;
-    const line = document.getElementById("addrLine").value;
-    const phone = document.getElementById("addrPhone").value;
-
-    if (!title || !line) {
+    if (!title || !line || !phone) {
       alert("Please fill required fields");
       return;
     }
 
-    const list = readAddresses();
-
-    const newAddress = {
-      id: "addr" + Date.now(),
-      title,
-      tag,
-      line,
-      phone
-    };
-
-    list.push(newAddress);
-    writeAddresses(list);
-
-    localStorage.setItem(getSelectedAddressKey(), newAddress.id);
-
-    renderAddresses();
-
-    modal.style.display = "none";
+    try {
+      await createAddress({ title, tag, line, phone });
+      modal.style.display = "none";
+      await loadAddresses();
+    } catch (err) {
+      console.error("Create address error:", err);
+      alert("Address save error");
+    }
   });
-
 }
 
 function bindStep1Nav() {
@@ -180,20 +148,20 @@ function bindStep1Nav() {
 
   if (next) {
     next.addEventListener("click", () => {
-      const selectedId = localStorage.getItem(getSelectedAddressKey());
       if (!selectedId) {
-        alert("Lütfen bir adres seç.");
+        alert("Please select address");
         return;
       }
+
+      localStorage.setItem("selectedAddressId", selectedId);
       window.location.href = "Step2.html";
     });
   }
 }
 
 export async function initStep1Page() {
-  seedAddressesIfEmpty();
-  renderAddresses();
-  bindAddressActionsOnce();
+  await loadAddresses();
+  bindAddressActions();
   bindAddAddressButton();
   bindStep1Nav();
 }

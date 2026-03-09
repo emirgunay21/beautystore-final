@@ -2,25 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const authenticateToken = require("../middleware/authMiddleware");
+const OrderController = require("../controllers/OrderController");
 
-// GET /orders (protected)
-router.get("/", authenticateToken, async (req, res) => {
-  return res.json({
-    ok: true,
-    message: "GET /orders çalışıyor",
-    user: req.user,
-    orders: [],
-  });
-});
-
-// POST /orders (protected)  { items: [...], address, shipping }
-router.post("/", authenticateToken, async (req, res) => {
-  return res.json({
-    ok: true,
-    message: "POST /orders çalışıyor",
-    user: req.user,
-    body: req.body,
-  });
-});
+router.post("/", authenticateToken, OrderController.createOrder);
+router.get("/", authenticateToken, OrderController.getOrders);
+router.get("/:id", authenticateToken, OrderController.getOrderDetail);
 
 module.exports = router;

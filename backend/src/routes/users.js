@@ -2,24 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 const authenticateToken = require("../middleware/authMiddleware");
+const UserController = require("../controllers/UserController");
 
-// GET /users/me (protected)
-router.get("/me", authenticateToken, async (req, res) => {
-  return res.json({
-    ok: true,
-    message: "GET /users/me çalışıyor",
-    user: req.user,
-  });
-});
+// GET /users/me
+router.get("/me", authenticateToken, UserController.getMe);
 
-// PUT /users/me (protected)
-router.put("/me", authenticateToken, async (req, res) => {
-  return res.json({
-    ok: true,
-    message: "PUT /users/me çalışıyor",
-    user: req.user,
-    body: req.body,
-  });
-});
+// PUT /users/me
+router.put("/me", authenticateToken, UserController.updateProfile);
 
 module.exports = router;

@@ -18,7 +18,7 @@ export async function initHomePage() {
     const data = await getJSON(`${API_BASE}/products?limit=8&skip=0`);
     const list = data.products || data.items || [];
     console.log("HOME products list:", list);
-console.log("HOME products length:", list.length);
+    console.log("HOME products length:", list.length);
 
     productsGrid.innerHTML = list
       .map(
